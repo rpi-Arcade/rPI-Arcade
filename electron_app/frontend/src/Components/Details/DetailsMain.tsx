@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import LeftBanner from "../Banners/LeftBanner";
 import RightBanner from "../Banners/RightBanner";
 
-import emuData from '../../emuData.json';
+import emuData from '../../assets/emuData.json';
 
 import { useController } from "../ControllerContext";
 
@@ -35,7 +35,7 @@ const DetailsMain: React.FC<DetailsMainProps> = ({ emulatorName }) => {
   };
 
   useEffect(() => {
-    registerButtonHandler("x", goBack);
+    registerButtonHandler("B", goBack);
   }, [registerButtonHandler]);
 
 
@@ -89,7 +89,7 @@ const DetailsMain: React.FC<DetailsMainProps> = ({ emulatorName }) => {
       <RightBanner />
       {/* <img className="Side1" src={pixelPanel} alt="S1" /> */}
       {/* <img className="Side2" src={pixelPanel} alt="S2" /> */}
-      <button className="back_button" onClick={goBack}>
+      <button className="standardButton active" onClick={goBack}>
         Back
       </button>
       <img className="Mario" src={Mario64} alt="Mario 64" />

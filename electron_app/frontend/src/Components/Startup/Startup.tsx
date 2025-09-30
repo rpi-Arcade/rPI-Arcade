@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Startup.css";
 import TopBanner from '../Banners/TopBanner.tsx';
@@ -72,9 +72,19 @@ const Startup = () => {
     resetInactivityTimer();
   }
 
-  useEffect(() => {
-    console.log("x detected")
+  useEffect(() => { //register button inputs
+    console.log("X detected")
     registerButtonHandler("X", handleClick);
+    registerButtonHandler("A", resetInactivityTimer);
+    registerButtonHandler("B", resetInactivityTimer);
+    registerButtonHandler("Y", resetInactivityTimer);
+    registerButtonHandler("A", resetInactivityTimer);
+    registerButtonHandler("LB", resetInactivityTimer);
+    registerButtonHandler("LT", resetInactivityTimer);
+    registerButtonHandler("RB", resetInactivityTimer);
+    registerButtonHandler("RT", resetInactivityTimer);
+    registerButtonHandler("Select", resetInactivityTimer);
+    registerButtonHandler("Start", handleClick);
   }, [registerButtonHandler]);
 
   // Track user interactions to reset the timer

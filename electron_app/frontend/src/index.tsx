@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './Components/App.tsx'
+import App from './Components/App/App.tsx'
 import './index.css'
 import { ControllerProvider } from './Components/ControllerContext.tsx';
 

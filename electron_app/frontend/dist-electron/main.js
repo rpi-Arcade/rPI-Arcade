@@ -9,29 +9,31 @@ const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
 const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron");
 const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, "public") : RENDERER_DIST;
+let win = null;
 function createWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
-  const win2 = new BrowserWindow({
+  win = new BrowserWindow({
     width,
     height,
-    // fullscreen: true, 
+    fullscreen: true,
     icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
     webPreferences: {
       preload: path.join(__dirname, "preload.mjs")
     }
   });
-  win2.webContents.on("did-finish-load", () => {
-    win2 == null ? void 0 : win2.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
+  win.webContents.on("did-finish-load", () => {
+    win == null ? void 0 : win.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
   });
   if (VITE_DEV_SERVER_URL) {
-    win2.loadURL(VITE_DEV_SERVER_URL);
+    win.loadURL(VITE_DEV_SERVER_URL);
   } else {
-    win2.loadFile(path.join(RENDERER_DIST, "index.html"));
+    win.loadFile(path.join(RENDERER_DIST, "index.html"));
   }
 }
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
+    console.log("Quitting app...");
     app.quit();
   }
 });
@@ -54,6 +56,23 @@ app.whenReady().then(() => {
       console.log(`EmulationStation Output: ${stdout}`);
       if (stderr) console.error(`EmulationStation Errors: ${stderr}`);
     });
+    setTimeout(() => {
+      if (win) {
+        console.log("Closing the Electron window...");
+        win.close();
+        win = null;
+      }
+      console.log("Exiting terminal...");
+      const exitPath = path.resolve(homeDir, "rPI-Arcade/electron_app/backend/exit.sh");
+      exec(exitPath, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error exiting terminal: ${error.message}`);
+          return;
+        }
+        console.log(`Output: ${stdout}`);
+        if (stderr) console.error(`Errors: ${stderr}`);
+      });
+    }, 5e3);
   });
 });
 export {

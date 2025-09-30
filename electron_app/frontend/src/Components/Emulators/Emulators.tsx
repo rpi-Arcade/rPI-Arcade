@@ -7,8 +7,10 @@ import TopBanner from '../Banners/TopBanner.tsx';
 import BotBanner from '../Banners/BotBanner.tsx';
 import logo from "/images/Logo.png";
 import { FiSettings } from "react-icons/fi";
+import uploadIcon from "../../assets/uploadIcon.png"
+import mascotGIF from "../../assets/mascotRPIRcade.gif"
 
-import emuData from "../../emuData.json";
+import emuData from "../../assets/emuData.json";
 
 import { useController } from "../ControllerContext";
 import { style } from "framer-motion/client";
@@ -52,28 +54,29 @@ const Emulators: React.FC<EmulatorsProps> = ({
   const allEmuData = [...emuData, addGamesBox, playGamesBox]; //concat addGamesBox
   const totalBoxes = allEmuData.length;
 
-  // Register joystick handlers for this page
+  // Register controller handlers for this page
   useEffect(() => {
-    registerHandler("left", handleLeftClick);
-    registerHandler("right", handleRightClick);
+    registerHandler("left", handleLeftMove);
+    registerHandler("right", handleRightMove);
+    registerButtonHandler("B", handleLogoClick);
     if (position === totalBoxes - 1) {
-      console.log("flashdrive reg")
+      // console.log("flashdrive reg")
       registerButtonHandler("X", handleFlashdriveSelection);
     } else if (position === 0) {
-      console.log("play reg")
+      // console.log("play reg")
       registerButtonHandler("X", handlePlaySelection);
     }
     else {
-      console.log("register for emu")
+      // console.log("register for emu")
       registerButtonHandler("X", handleEmulatorSelection);
     }
   }, [position, registerHandler, registerButtonHandler]);
 
-  const handleRightClick = () => {
+  const handleRightMove = () => {
     setPosition((prev) => (prev < totalBoxes - 1 ? prev + 1 : 0));
   };
 
-  const handleLeftClick = () => {
+  const handleLeftMove = () => {
     setPosition((prev) => (prev > 0 ? prev - 1 : totalBoxes - 1));
   };
 
@@ -96,7 +99,9 @@ const Emulators: React.FC<EmulatorsProps> = ({
 
   // Stop app and open EmulationStation; sends command to Electron backend via IPC
   const handlePlaySelection = () => {
-    window.electronAPI.startEmulationStation(); 
+    console.log("sending msg")
+    window.electronAPI.startEmulationStation();
+    console.log("returning from sending msg")
   };
 
   return (
@@ -105,9 +110,16 @@ const Emulators: React.FC<EmulatorsProps> = ({
       <BotBanner />
       <FiSettings className="settings-icon" onClick={handleSettingsClick} />
       <img src={logo} alt="logo" className="logo" style={{ opacity: 0, zIndex:"99"}} onClick={handleLogoClick}/>
+      <div className="mascotGIFWrapper">
+          <img src={mascotGIF} alt="mascot gif" className="mascotGIF"/>
+        </div>
+      {/* This logo is invisible & just for testing purposes; on click, returns to startup screen. */}
+      <img src={logo} alt="logo" className="logo" style={{ opacity: 0, zIndex: "99" }} onClick={handleLogoClick} />
       {/* Middle Section =====================================================*/}
       <div className="middle">
-        <div className="box-container">
+        
+
+        <div className="carousel">
           {allEmuData.map((box, index) => {
             const offset = (position - index - 1 + totalBoxes) % totalBoxes;
 
@@ -125,6 +137,7 @@ const Emulators: React.FC<EmulatorsProps> = ({
             let zIndex = 1;
             const maxZIndex = totalBoxes; // Set maxZIndex to total number of boxes
 
+            // The closer the box is to the center, the larger it is
             if (offset === 0) {
               scale = 1.2;
               zIndex = maxZIndex;
@@ -161,9 +174,14 @@ const Emulators: React.FC<EmulatorsProps> = ({
                   are special so they get their own styles. */}
                 {index === totalBoxes - 2 ? (
                   <div className="addGamesBox">
-                    <p style={{ margin: "0" }}> ★ {box.text} ★ </p>
+                    <div className="addGames">
+                      <img src={uploadIcon} alt="uploadIcon" className="uploadIcon" />
+                      <p> Upload Files </p>
+                    </div>
+
                     <p style={{ textAlign: "left", fontSize: "24px", margin: "5% 0 0 0" }}>
-                      REQUIRED: &nbsp;&nbsp;&nbsp;flashdrive + &nbsp;&nbsp;&nbsp;proper format Select to see format.
+                      Requires flashdrive. <br /><br />
+                      Select to see format.
                     </p>
                   </div>
                 ) : index === totalBoxes - 1 ? (
@@ -185,8 +203,8 @@ const Emulators: React.FC<EmulatorsProps> = ({
         </div>
 
         <div className="button-container">
-          <button className="left-button" onClick={handleLeftClick} />
-          <button className="right-button" onClick={handleRightClick} />
+          <button className="arrow-button left-arrow" onClick={handleLeftMove} />
+          <button className="arrow-button right-arrow" onClick={handleRightMove} />
         </div>
       </div>
 
@@ -199,10 +217,11 @@ const Emulators: React.FC<EmulatorsProps> = ({
               <div className="buttonDesc">
                 <p> Press </p>
                 <button
-                  className="buttonCircle"
+                  className="standardButton active"
                   onClick={handleFlashdriveSelection}
+                  style={{ margin:"10px"}}
                 >
-                  button
+                  X
                 </button>
                 <p> to access </p>
               </div>
@@ -213,10 +232,11 @@ const Emulators: React.FC<EmulatorsProps> = ({
               <div className="buttonDesc">
                 <p> Press </p>
                 <button
-                  className="buttonCircle"
+                  className="standardButton active"
                   onClick={handlePlaySelection}
+                  style={{ margin:"10px"}}
                 >
-                  button
+                  X
                 </button>
                 <p> to </p>
               </div>
@@ -227,10 +247,11 @@ const Emulators: React.FC<EmulatorsProps> = ({
               <div className="buttonDesc">
                 <p> Press </p>
                 <button
-                  className="buttonCircle"
+                  className="standardButton"
                   onClick={handleEmulatorSelection}
+                  style={{ margin:"10px"}}
                 >
-                  button
+                  X
                 </button>
                 <p> for </p>
               </div>

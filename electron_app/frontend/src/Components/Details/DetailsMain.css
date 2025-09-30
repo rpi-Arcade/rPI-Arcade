@@ -144,25 +144,6 @@
   /* Second pseudo-element with more offset */
 }
 
-.back_button {
-  font-family: "Teko", sans-serif;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: #597cd2;
-  transition: background-color 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position:absolute;
-  left: 2%;
-  top: 2%;
-  font-size: 16px;
-}
-
-.back_button:hover {
-  background-color: #0056b3;
-}
 .Mario{
   width:clamp(50px, 20vw, 100px);
   z-index: 1;

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { io, Socket } from "socket.io-client";
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import io from 'socket.io-client';
 
 import "./Flashdrive.css";
 import LeftBanner from '../Banners/LeftBanner'
@@ -11,55 +11,51 @@ import Step1Instruction from './Step1Instruction';
 
 import { useController } from "../ControllerContext";
 
-// Connect to flaskio server for handling flashdrive insertions
-const socket = io('http://127.0.0.1:5001', {
-  reconnection: false, // Disable automatic reconnections
-  timeout: 5000,
-});
-
+/* Establishes two way communication with backend USB_monitor script to allow anyone to insert
+    a USB with the right format and upload game files to the EmulationStation. The script starts 
+    listening for USB insertions once the user presses continue to step 2. Once USB processes and
+    at step 3, User can remove flashdrive. 
+*/
 const Flashdrive: React.FC = () => {
-  const navigate = useNavigate();
-  const { registerButtonHandler } = useController();
+  // Establish socket with usb_monitor server ======================================
+  const socketRef = useRef<Socket | null>(null); // Ref so that socket doesn't trigger re-renders
 
-  const handleCancel = () => {
-    if (hasStarted.current) {
-      socket.emit('STOP');
-      hasStarted.current = false;
-    }
-    navigate('/emulators');
-  };
-
-  useEffect(() => {
-    registerButtonHandler("x", handleCancel);
-  }, [registerButtonHandler]);
-
-  // handle getting messages ======================================
-  const [successGames, setSuccessGames] = useState([]);
-  const [duplicateGames, setDuplicateGames] = useState([]);
-  const [failedGames, setFailedGames] = useState([]);
+  const [successGames, setSuccessGames] = useState<string[]>([]);
+  const [duplicateGames, setDuplicateGames] = useState<string[]>([]);
+  const [failedGames, setFailedGames] = useState<string[]>([]);
 
   const [logMessages, setLogMessages] = useState<string[]>([]);
-  const hasStarted = useRef(false);
+  const [hasStarted, setHasStarted] = useState(false);
 
-  // Supposed to run once when entering page
-  // Is actually ran 2x, so hasStarted ref to prevent repeat
-
-  // Prompts monitoring for flashdrives
   useEffect(() => {
-    if (!hasStarted.current) {
-      socket.emit('START');
-      hasStarted.current = true;
+    // make sure game summary arrays are reset
+    setSuccessGames([]);
+    setDuplicateGames([]);
+    setFailedGames([]);
+
+    // Establish socket connection only when the page is mounted
+    socketRef.current = io("http://127.0.0.1:5001", {
+      reconnection: false, // Disable automatic reconnections
+      timeout: 5000,
+    });
+
+    console.log("Connected to flashdrive socket");
+
+    // Prompts monitoring for flashdrives
+    if (!hasStarted) {
+      socketRef.current.emit('START');
+      setHasStarted(true);
     }
-  }, []);
 
-  useEffect(() => {
-    // Process log messages
-    const handleStatus = (data: any) => {
+    /* Continuously listens for messages from backend. Does multiple tasks including
+      updating steps, sorts games into summary, and processes errors.
+      Process log messages */
+    const handleStatus = (data: { message: string }) => {
       setLogMessages((prevMessages) => {
         const updatedMessages = [...prevMessages, data.message];
         console.log(data.message)
 
-        // Check for key phrases to transition steps
+        // Updates step based on key phrases.
         if (updatedMessages.some(msg => msg.includes("USB device"))) {
           markStepComplete(1);
           setActiveStep(2);
@@ -79,8 +75,8 @@ const Flashdrive: React.FC = () => {
       });
     };
 
-    // Process summary
-    const handleSummary = (data: any) => {
+    // Process summary. Store in lists to be displayed at the last step.
+    const handleSummary = (data: { message: string, type: string, games: string[] }) => {
       console.log(data.type);
       console.log(data.games);
 
@@ -93,13 +89,16 @@ const Flashdrive: React.FC = () => {
       }
     };
 
-    // Process errors
+    /* Process errors. Display popup and return to carousel screen
+      The two similar functions handle different situations 
+          (ex. handleConnectError if request fails with error msg
+            handleConnectFailed if connection fails to be established) */
     const handleConnectError = (error: Error) => {
       console.error("Connection failed:", error);
       toast.error(
         "Error: Games cannot be uploaded at this time. Please contact the RPI ARCADE team.",
         {
-          onClose: () => navigate("/"),
+          onClose: () => navigate("/emulators"),
         }
       );
     };
@@ -109,35 +108,62 @@ const Flashdrive: React.FC = () => {
       toast.error(
         "Error: Games cannot be uploaded at this time. Please contact the RPI ARCADE team.",
         {
-          onClose: () => navigate("/"),
+          onClose: () => navigate("/emulators"),
         }
       );
     };
+    console.log("attach listeners")
 
     // Attach socket listeners
-    socket.on("status", handleStatus);
-    socket.on("summary", handleSummary);
-    socket.on("connect_error", handleConnectError);
-    socket.on("connect_failed", handleConnectFailed);
+    socketRef.current.on("status", handleStatus);
+    socketRef.current.on("summary", handleSummary);
+    socketRef.current.on("connect_error", handleConnectError);
+    socketRef.current.on("connect_failed", handleConnectFailed);
 
-    // Cleanup listeners on unmount
+    // Cleanup listeners on unmount & disconnect the socket
     return () => {
-      socket.off("status", handleStatus);
-      socket.off("summary", handleSummary);
-      socket.off("connect_error", handleConnectError);
-      socket.off("connect_failed", handleConnectFailed);
-    };
-  }, []);
+      if (socketRef.current) {
+        socketRef.current.off("status", handleStatus);
+        socketRef.current.off("summary", handleSummary);
+        socketRef.current.off("connect_error", handleConnectError);
+        socketRef.current.off("connect_failed", handleConnectFailed);
 
-  // handle displaying steps ======================================
-  const [completedSteps, setCompletedSteps] = useState<boolean[]>([false, false, false]);
-  const [activeStep, setActiveStep] = useState(1);
-  const activeStepRef = useRef(activeStep);
+        socketRef.current.disconnect();
+        console.log("Disconnected from flashdrive socket");
+      }
+    };
+  }, []); // Runs only when the component mounts/unmounts
+
+
+  // Button actions ======================================
+  const navigate = useNavigate();
+  const { registerHandler, registerButtonHandler } = useController();
+
 
   useEffect(() => {
-    activeStepRef.current = activeStep;
-  }, [activeStep]);
+    registerButtonHandler("x", handleClick);
 
+  }, [registerButtonHandler, registerHandler]);
+
+  const handleClick = () => {
+  }
+
+  const handleContinue = () => {
+    markStepComplete(1)
+    setActiveStep(2)
+  }
+
+  const handleCancel = () => {
+    if (socketRef.current) {
+      socketRef.current.emit('STOP');
+      setHasStarted(false);
+    }
+    navigate('/emulators');
+  };
+
+  // Handle displaying steps ======================================
+  const [completedSteps, setCompletedSteps] = useState<boolean[]>([false, false, false]);
+  const [activeStep, setActiveStep] = useState(1);
 
   const markStepComplete = (step: number) => {
     setCompletedSteps((prevCompletedSteps) => {
@@ -148,10 +174,10 @@ const Flashdrive: React.FC = () => {
   };
 
   const stepTitle = [
-    "Step 1: Insert your flashdrive",
-    "Step 2: Wait for data processing",
-    "Step 3: Remove your flashdrive",
-    "Processing complete."
+    "Step 1: Read Instructions and Prepare Your Flashdrive",
+    "Step 2: Insert Flashdrive",
+    "Step 3: Processing complete. Please remove your flashdrive",
+    "You may close this page."
   ];
 
   return (
@@ -167,12 +193,12 @@ const Flashdrive: React.FC = () => {
         transition={{ duration: 1 }}
       >
 
-        {[1, 2, 3].map((step) => (
+        {[1, 2, 3].map((stepNum) => (
           <button
-            key={step}
-            className={`buttonStep ${activeStep === step ? 'activeStep' : ''} ${completedSteps[step - 1] ? 'completedStep' : ''}`}
-          >
-            {step}
+            key={stepNum}
+            className={`buttonStep ${activeStep === stepNum ? 'activeStep' : ''} ${completedSteps[stepNum - 1] ? 'completedStep' : ''}`}
+            onClick={() => setActiveStep(stepNum)} /* FOR TESTING PURPOSES */>
+            {stepNum}
           </button>
         ))}
       </motion.div>
@@ -180,14 +206,42 @@ const Flashdrive: React.FC = () => {
 
       <div className="body">
         <div className="cancel">
-          <button className="buttonCircle" onClick={handleCancel}> button </button>
-          cancel &
-          <br />
-          return to main screen
+
+          <div className="textAndButton">
+            <div className='buttonTitle'>
+              Return
+            </div>
+            <button
+              className={`standardButton`}
+              onClick={handleCancel}>
+              B
+            </button>
+          </div>
+
+          <div className="flashdriveTitle">
+            <p style={{ fontSize: "50px" }}> Add Games to EmulationStation </p>
+            <p style={{ fontSize: "40px", color: "#e7ef88" }}>{stepTitle[activeStep - 1]}</p>
+          </div>
+
+          {/* remove continue button once progressed to next step */}
+          {activeStep == 1 ?
+            <div className="textAndButton">
+              <div className='buttonTitle'>
+                Continue
+              </div>
+              <button
+                className={`standardButton`}
+                onClick={handleContinue}>
+                X
+              </button>
+            </div> :
+            ''
+          }
+
+
+
         </div>
-        <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-          <p style={{ alignSelf: "center" }}>{stepTitle[activeStep - 1]}</p>
-        </div>
+
 
         {/* ============================ */}
         <div className="logOutput">
@@ -197,10 +251,10 @@ const Flashdrive: React.FC = () => {
           {
             activeStep === 2 && (
               <>
-                <h3 style={{ margin: 0 }}>Log Messages: </h3>
+                <h3>Log Messages: </h3>
                 <div className='logMsgs' style={{ fontSize: "20px" }}>
                   {logMessages.map((message, index) => (
-                    <p style={{ margin: "0" }} key={index}>{`> ${message}`}</p>
+                    <p key={index}>{`> ${message}`}</p>
                   ))}
                 </div>
               </>
@@ -210,36 +264,37 @@ const Flashdrive: React.FC = () => {
             // MOVE TO DIFF FILE
             (activeStep === 3 || activeStep === 4) && (
               <div style={{ display: "flex" }}>
-                <div style={{ width: "50%" }}>
-                  <h3 style={{ margin: 0 }}>Log Message: </h3>
+                <div style={{ width: "50%", height: "68vh" }}>
+                  <h3>Log Messages: </h3>
                   <div className='logMsgs'>
                     {logMessages.map((message, index) => (
-                      <p style={{ margin: "0", lineHeight: "100%" }} key={index}>{`> ${message}`}</p>
+                      <p style={{ lineHeight: "100%" }} key={index}>{`> ${message}`}</p>
                     ))}
                   </div>
                 </div>
                 <div className='summary'>
-                  <h3 style={{ margin: 0 }}>Summary: </h3>
-                  <h4>Games successfully added ({successGames.length}):</h4>
-                  <ul>
-                    {successGames.map((game, index) => (
-                      <li key={index}>{game}</li>
-                    ))}
-                  </ul>
+                  <h3>Summary: </h3>
+                  <div className="summaryCategories">
+                    <h4>Games successfully added ({successGames.length}):</h4>
+                    <ul className='summaryItem'>
+                      {successGames.map((game, index) => (
+                        <li key={index}>{game}</li>
+                      ))}
+                    </ul>
+                    <h4>Games already exist ({duplicateGames.length}):</h4>
+                    <ul>
+                      {duplicateGames.map((game, index) => (
+                        <li key={index}>{game}</li>
+                      ))}
+                    </ul>
 
-                  <h4>Games already exist ({duplicateGames.length}):</h4>
-                  <ul>
-                    {duplicateGames.map((game, index) => (
-                      <li key={index}>{game}</li>
-                    ))}
-                  </ul>
-
-                  <h4>Error processing game ({failedGames.length}):</h4>
-                  <ul>
-                    {failedGames.map((game, index) => (
-                      <li key={index}>{game}</li>
-                    ))}
-                  </ul>
+                    <h4>Error processing game ({failedGames.length}):</h4>
+                    <ul>
+                      {failedGames.map((game, index) => (
+                        <li key={index}>{game}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
             )

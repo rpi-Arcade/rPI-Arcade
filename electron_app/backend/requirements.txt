@@ -1,0 +1,7 @@
+pyudev
+pygame
+flask
+flask-cors
+flask-socketio
+Gunicorn
+eventlet

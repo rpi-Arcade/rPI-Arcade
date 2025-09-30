@@ -1,5 +1,7 @@
-# import eventlet
-# eventlet.monkey_patch()
+import eventlet
+eventlet.monkey_patch()
+
+# TO run the server: gunicorn -w 1 -k eventlet --timeout 120 -b 0.0.0.0:5002 controller_monitor:app
 import pygame # type: ignore
 import signal
 import sys
@@ -11,7 +13,6 @@ import time
 
 def signal_handler(signal, frame):
     print('Shutting down control montitor server...')
-    socketio.stop()
     sys.exit(0)
 
 HOST = "127.0.0.1" 
@@ -19,17 +20,15 @@ PORT = 5002
 
 # Setup socketio
 app = Flask(__name__)
-socketio = SocketIO(app)
+#socketio = SocketIO(app)
 
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")#, logger=True, engineio_logger=True)
 
 @socketio.on('START')
 def start_controller_monitoring():
-    # Start the joystick handling in a separate thread
-    joystick_thread = threading.Thread(target=start_joystick_handling)
-    joystick_thread.daemon = True  # This will allow the thread to close when the program exits
-    joystick_thread.start()
+    thread = threading.Thread(target=start_joystick_handling, daemon=True)
+    thread.start()
     print("Monitoring controller movements...")
     
     # TESTING =====================================================
@@ -40,35 +39,25 @@ def start_controller_monitoring():
     # time.sleep(0.5)  
     # socketio.emit("joystick_event", {"direction": "release"})
     # time.sleep(1)
-    # socketio.emit("joystick_event", {"button": "x", "action": "pressed"})
+    # socketio.emit("joystick_event", {"button": "X", "action": "pressed"})
     # time.sleep(1)
-    # socketio.emit("joystick_event", {"button": "x", "action": "pressed"})
-    # time.sleep(1)
-    # socketio.emit("joystick_event", {"direction": "right"})
-    # time.sleep(0.5)  
-    # socketio.emit("joystick_event", {"direction": "release"})
+    # socketio.emit("joystick_event", {"button": "X", "action": "pressed"})
     # time.sleep(1)
     # socketio.emit("joystick_event", {"direction": "right"})
     # time.sleep(0.5)  
     # socketio.emit("joystick_event", {"direction": "release"})
     # time.sleep(1)
-    # socketio.emit("joystick_event", {"button": "x", "action": "pressed"})
+    # socketio.emit("joystick_event", {"direction": "right"})
+    # time.sleep(0.5)  
+    # socketio.emit("joystick_event", {"direction": "release"})
     # time.sleep(1)
-    # socketio.emit("joystick_event", {"button": "x", "action": "pressed"})
+    # socketio.emit("joystick_event", {"button": "X", "action": "pressed"})
+    # time.sleep(1)
+    # socketio.emit("joystick_event", {"button": "X", "action": "pressed"})
     # time.sleep(1)
     # socketio.emit("joystick_event", {"direction": "right"})
     # time.sleep(3)  
     # socketio.emit("joystick_event", {"direction": "release"})
-
-    # time.sleep(1)
-    # socketio.emit("joystick_event", {"direction": "left"})
-    # time.sleep(1)  
-    # socketio.emit("joystick_event", {"direction": "release"})
-    # time.sleep(1)  
-    # socketio.emit("joystick_event", {"direction": "right"})
-    # time.sleep(1)  
-    # socketio.emit("joystick_event", {"direction": "release"})
-    
 
 
 # Start joystick monitoring in a separate thread
@@ -188,4 +177,4 @@ def handle_axis_motion(axis, value):
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
-    socketio.run(app, host=HOST, port=PORT)
+    socketio.run(app, host=HOST, port=PORT, allow_unsafe_werkzeug=True)

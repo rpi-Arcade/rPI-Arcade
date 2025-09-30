@@ -1,16 +1,31 @@
-import React, { act, createContext, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://127.0.0.1:5002", { timeout: 5000 });
+const socket = io("http://127.0.0.1:5002", { 
+  transports: ["websocket"],
+  reconnection: true,
+  autoConnect: true,
+  reconnectionAttempts: 5,
+  timeout: 5000,
+});
 
-// Context for allowing frontend to create handlers that map controller input to interactions on the GUI
-const ControllerContext = createContext({
-  events: [] as string[],
-  // direction: joystick action ("left", "right", "up", "down", "released").
-  // handler: Calibrated for individual components, for example in Emulator.tsx,
-  //    registerHandler("left", handleLeftClick);    ---> Associates action "left" with its own function, handeLeftClick
-  registerHandler: (direction: string, handler: () => void) => { },
-  registerButtonHandler: (button: string, handler: () => void) => { },
+
+/* Context for allowing frontend to create handlers that map controller input to interactions on the GUI
+
+  direction: joystick action ("left", "right", "up", "down", "released").
+  handler: Calibrated for individual components, for example in Emulator.ts:
+      > registerHandler("left", handleLeftClick);    
+            ---> Associates action "left" with function: handeLeftClick */
+interface ControllerContextType {
+  events: string[];  // Store directions or events as strings
+  registerHandler: (direction: string, handler: () => void) => void;
+  registerButtonHandler: (button: string, handler: () => void) => void;
+}
+
+const ControllerContext = createContext<ControllerContextType>({
+  events: [],  
+  registerHandler: () => {},  
+  registerButtonHandler: () => {}  
 });
 
 export const ControllerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -28,12 +43,16 @@ export const ControllerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       socket.emit('START');
       hasStarted.current = true;
     }
-  }, []);
 
-  useEffect(() => {
+    /* Listen to socket events. Handle incoming controller messages. 
+    First key in data is either "direction" (joystick) or "button":
+    {"direction": "left"} 
+    {"direction": "release"}
+    {"button": "X", "action": "pressed"} */
     socket.on("joystick_event", (data) => {
       const { button, action, direction } = data;
       let eventMessage = "";
+      console.log("got message")
 
       // First grabs button/action if button pressed
       // and direction if joystick interacted
@@ -41,7 +60,7 @@ export const ControllerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         console.log(button, action)
         console.log("Registered Button Handler: ", buttonHandlers.current)
         eventMessage = `${button} Button ${action}`;
-        buttonHandlers.current[button]();
+        buttonHandlers.current[button]?.();
       } else if (direction) {
         eventMessage = `Joystick ${direction}`;
         console.log(direction)
@@ -62,7 +81,7 @@ export const ControllerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           if (intervalRef.current !== null) {
             clearInterval(intervalRef.current);
           }
-          joystickHandlers.current[direction]();
+          joystickHandlers.current[direction]()?.();
 
           // Start repeating the action, initially slower
           intervalRef.current = setInterval(() => {

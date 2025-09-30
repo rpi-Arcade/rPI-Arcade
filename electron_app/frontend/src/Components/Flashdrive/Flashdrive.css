@@ -9,6 +9,15 @@
   color: white;
 }
 
+.flashdriveTitle {
+  display: flex;
+  width: 100%;
+  position: absolute;
+  flex-direction: column;
+  align-items: center;
+  line-height: 180%;
+}
+
 .flashdrive .body {
   width: 100%;
   height: 100%;
@@ -21,18 +30,32 @@
 .cancel {
   color: white;
   display: flex;
-  align-items: center;
+  flex-direction: row;
   position: absolute;
   text-align: left;
-  top: 2%;
-  left: 12%;
-  font-size: 20px;
+  left: 10%;
+  top: 6%;
+  width: 88%;
+  font-size: 30px;
   line-height: 20px;
   z-index: 99;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.cancel .button {
-  font-weight: 100;
+.textAndButton {
+  display: flex;
+  width: 25%;
+  align-items: center;
+  flex-direction: column;
+  margin: 0px 20px;
+}
+
+.buttonTitle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5px;
+  width: 80px;
 }
 
 /* log output ===================================== */
@@ -45,10 +68,11 @@
   left: 17%;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   line-height: 160%;
-  border: 2px solid white; 
+  border: 2px solid white;
   padding: 1%;
+  overflow: hidden;
 }
 
 .logMsgs {
@@ -66,13 +90,28 @@
   border-left: 2px solid white;
 }
 
+
+.summaryCategories {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+
+.summaryItem {
+  font-family: "DM Sans", sans-serif;
+}
+
 /* Button steps ===================================== */
 
 .buttonsSteps {
   width: 20%;
   height: 100%;
   position: absolute;
-  top: 8%; 
+  top: 8%;
   left: 5%;
   display: flex;
   flex-direction: column;
@@ -92,11 +131,12 @@
   border-radius: 20%;
   border: 2px solid white;
   color: white;
-  text-shadow: /* text border */
-  2px 2px 0px black, 
-  -2px -2px 0px black, 
-  2px -2px 0px black, 
-  -2px 2px 0px black; 
+  text-shadow:
+    /* text border */
+    2px 2px 0px black,
+    -2px -2px 0px black,
+    2px -2px 0px black,
+    -2px 2px 0px black;
 }
 
 .activeStep {
@@ -112,10 +152,10 @@
   /* horizontal line extending from step */
   content: '';
   position: absolute;
-  top: 50%; 
-  left: 100%; 
+  top: 50%;
+  left: 100%;
   transform: translateY(-50%);
-  width: calc(10vw - 100%); 
+  width: calc(10vw - 100%);
   height: 2px;
   background-color: white;
   z-index: 1;
@@ -125,14 +165,13 @@
   /* arrowhead */
   content: '';
   position: absolute;
-  top: 50%; 
+  top: 50%;
   left: calc(10vw + 2px);
   transform: translateY(-50%);
   width: 0;
   height: 0;
   border-style: solid;
   border-width: 7px 0 7px 11px;
-  border-color: transparent transparent transparent white; 
+  border-color: transparent transparent transparent white;
   z-index: 1;
 }
-
