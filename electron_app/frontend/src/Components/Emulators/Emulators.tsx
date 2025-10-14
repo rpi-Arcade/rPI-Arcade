@@ -6,12 +6,14 @@ import "./Emulators.css";
 import TopBanner from '../Banners/TopBanner.tsx';
 import BotBanner from '../Banners/BotBanner.tsx';
 import logo from "/images/Logo.png";
+import { FiSettings } from "react-icons/fi";
 import uploadIcon from "../../assets/uploadIcon.png"
 import mascotGIF from "../../assets/mascotRPIRcade.gif"
 
 import emuData from "../../assets/emuData.json";
 
 import { useController } from "../ControllerContext";
+import { style } from "framer-motion/client";
 
 // Type Definitions ==========================
 interface EmulatorsProps {
@@ -88,6 +90,9 @@ const Emulators: React.FC<EmulatorsProps> = ({
     navigate("/flashdrive");
   };
 
+  const handleSettingsClick = () => {
+    navigate("/settings");
+  };
   const handleLogoClick = () => {
     navigate("/");
   };
@@ -103,6 +108,8 @@ const Emulators: React.FC<EmulatorsProps> = ({
     <div className="emulators">
       <TopBanner />
       <BotBanner />
+      <FiSettings className="settings-icon" onClick={handleSettingsClick} />
+      <img src={logo} alt="logo" className="logo" style={{ opacity: 0, zIndex:"99"}} onClick={handleLogoClick}/>
       <div className="mascotGIFWrapper">
           <img src={mascotGIF} alt="mascot gif" className="mascotGIF"/>
         </div>
@@ -148,23 +155,23 @@ const Emulators: React.FC<EmulatorsProps> = ({
             }
 
             return (
+            <div key={index} className={`spinWrapper ${offset === 0 ? "spinning" : ""}`} style={{ zIndex }}>
               <motion.div
-                key={index}
-                className={`box ${offset === 0 ? "active" : ""} ${index === totalBoxes - 2 || index === totalBoxes - 1 ? "borderCustom" : ""}`}
-                animate={{
-                  zIndex: zIndex,
-                  x: xPosition,
-                  y: yPosition,
-                  scale: scale,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 600,
-                  damping: 60,
-                }}
+              className={`box ${index === totalBoxes - 2 || index === totalBoxes - 1 ? "borderCustom" : ""}`}
+              animate={{
+                x: xPosition,
+                y: yPosition,
+                scale: scale,
+                // No rotateY here, it's handled by CSS animation
+              }}
+              transition={{
+                x: { type: "spring", stiffness: 600, damping: 60 },
+                y: { type: "spring", stiffness: 600, damping: 60 },
+                scale: { type: "spring", stiffness: 600, damping: 60 },
+              }}
               >
-                {/* Render all boxes. Note that certain boxes like addGamesBox and launchGamesBox
-                    are special so they get their own styles. */}
+              {/* Render all boxes. Note that certain boxes like addGamesBox and launchGamesBox
+                  are special so they get their own styles. */}
                 {index === totalBoxes - 2 ? (
                   <div className="addGamesBox">
                     <div className="addGames">
@@ -190,6 +197,7 @@ const Emulators: React.FC<EmulatorsProps> = ({
                   </>
                 )}
               </motion.div>
+            </div>
             );
           })}
         </div>

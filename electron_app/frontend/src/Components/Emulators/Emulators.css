@@ -38,7 +38,8 @@
   perspective: 1000px;
 
   top: 45%;
-  left: 45.5%;
+  /* left: %;
+  transform: translate(-50%, 0);  */ 
 }
 
 .box {
@@ -174,4 +175,64 @@
   font-size: 30px;
   align-items: center;
   justify-content: center;
+}
+
+@keyframes infiniteRotateY {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+.spinWrapper {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.spinning {
+  animation: infiniteRotateY 3s linear infinite;
+  /* transform-style: preserve-3d; */
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow:
+      0 0 10px rgba(255, 255, 255, 0.3),
+      0 0 20px rgba(255, 255, 255, 0.15),
+      0 0 30px rgba(255, 255, 255, 0.05);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(255, 255, 255, 0.6),
+      0 0 35px rgba(255, 255, 255, 0.3),
+      0 0 45px rgba(255, 255, 255, 0.15);
+  }
+}
+
+.spinning .box {
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+.settings-icon {
+  position: absolute;
+  top: 40px;
+  right: 25px;
+  scale: 2.0;
+  cursor: pointer;
+  color: white;
+  z-index: 100;
+  transition: transform 0.2s ease;
+}
+
+.settings-icon:hover {
+  transform: rotate(30deg) scale(1.1);
 }

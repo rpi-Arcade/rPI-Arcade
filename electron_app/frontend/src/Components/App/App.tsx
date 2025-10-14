@@ -8,10 +8,11 @@ App.tsx also keeps track of which details page to open and which position in the
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
-import Emulators from '../Emulators/Emulators.tsx';
+import Emulators from '../Emulators/Emulators';
 import DetailsMain from '../Details/DetailsMain.js';
 import Flashdrive from '../Flashdrive/Flashdrive.tsx';
 import Startup from '../Startup/Startup.tsx';
+import Settings from '../Settings/Settings.tsx';
 import backdrop from "/images/backdrop.png";
 
 import boxData from "../../assets/emuData.json";
@@ -40,6 +41,12 @@ function App() {
           <Route
             path="/emulators"
             element={<Emulators onEmuClick={handleEmuClick} position={position} setPosition={setPosition} />}
+          />
+  
+          {/* Settings page */}
+          <Route 
+            path="/settings"
+            element={<Settings />} 
           />
 
           {/* Details page for selected emulator */}
