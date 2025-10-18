@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -11,6 +11,8 @@ import uploadIcon from "../../assets/uploadIcon.png"
 import mascotGIF from "../../assets/mascotRPIRcade.gif"
 
 import emuData from "../../assets/emuData.json";
+
+import moveSound from "../../assets/SE_SYS_SLOT_FRAME.wav";
 
 import { useController } from "../ControllerContext";
 import { style } from "framer-motion/client";
@@ -41,6 +43,13 @@ const Emulators: React.FC<EmulatorsProps> = ({
   const navigate = useNavigate();
   const { registerHandler, registerButtonHandler } = useController();
 
+  //For keyboard inputs
+  const lastKeyPress = useRef(0);
+  const COOLDOWN = 250;
+
+  //For SFX
+  const moveAudioRef = useRef<HTMLAudioElement | null>(null);
+
   const addGamesBox = {
     image: "",
     text: "ADD GAMES",
@@ -59,6 +68,10 @@ const Emulators: React.FC<EmulatorsProps> = ({
     registerHandler("left", handleLeftMove);
     registerHandler("right", handleRightMove);
     registerButtonHandler("B", handleLogoClick);
+
+    moveAudioRef.current = new Audio(moveSound);
+    moveAudioRef.current.volume = 0.5;
+
     if (position === totalBoxes - 1) {
       // console.log("flashdrive reg")
       registerButtonHandler("X", handleFlashdriveSelection);
@@ -71,6 +84,30 @@ const Emulators: React.FC<EmulatorsProps> = ({
       registerButtonHandler("X", handleEmulatorSelection);
     }
   }, [position, registerHandler, registerButtonHandler]);
+
+  // Arrow Key Function 
+
+    useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+
+      const now = Date.now();
+      if (now - lastKeyPress.current < COOLDOWN) return;
+      lastKeyPress.current = now;
+
+      if (e.key === "ArrowLeft") {
+        handleLeftMove();
+        playMoveSound();
+      } else if (e.key === "ArrowRight") {
+        handleRightMove();
+        playMoveSound();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
+  
 
   const handleRightMove = () => {
     setPosition((prev) => (prev < totalBoxes - 1 ? prev + 1 : 0));
@@ -95,6 +132,13 @@ const Emulators: React.FC<EmulatorsProps> = ({
   };
   const handleLogoClick = () => {
     navigate("/");
+  };
+
+  const playMoveSound = () => {
+    if (moveAudioRef.current) {
+      moveAudioRef.current.currentTime = 0;
+      moveAudioRef.current.play().catch(() => {});
+    }
   };
 
   // Stop app and open EmulationStation; sends command to Electron backend via IPC
@@ -155,7 +199,7 @@ const Emulators: React.FC<EmulatorsProps> = ({
             }
 
             return (
-            <div key={index} className={`spinWrapper ${offset === 0 ? "spinning" : ""}`} style={{ zIndex }}>
+            <div key={index} className={`spinWrapper ${offset === 0 ? "bouncing" : ""}`} style={{ zIndex }}>
               <motion.div
               className={`box ${index === totalBoxes - 2 || index === totalBoxes - 1 ? "borderCustom" : ""}`}
               animate={{

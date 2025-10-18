@@ -198,11 +198,27 @@
   backface-visibility: hidden;
 }
 
+/*
 .spinning {
   animation: infiniteRotateY 3s linear infinite;
-  /* transform-style: preserve-3d; */
+  /* transform-style: preserve-3d; 
+} */
+
+@keyframes bounceY {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px); /* bounce height */
+  }
 }
 
+.bouncing {
+  animation: bounceY 1.5s ease-in-out infinite;
+}
+
+
+/* No longer used: 
 @keyframes pulseGlow {
   0%, 100% {
     box-shadow:
@@ -217,10 +233,7 @@
       0 0 45px rgba(255, 255, 255, 0.15);
   }
 }
-
-.spinning .box {
-  animation: pulseGlow 2.5s ease-in-out infinite;
-}
+*/
 
 .settings-icon {
   position: absolute;
