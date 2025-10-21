@@ -7,20 +7,16 @@ const Settings: React.FC = () => {
   const navigate = useNavigate();
   const { registerHandler, registerButtonHandler } = useController();
 
-  const [activeSection, setActiveSection] = useState<null | "audio" | "video" | "controller">(null);
+  const [activeSection, setActiveSection] = useState<null | "audio">(null);
   const [audioOn, setAudioOn] = useState(true);
   const [volume, setVolume] = useState(0.5);
   const audioRef = React.useRef<HTMLAudioElement>(null); 
-  const [videoQuality, setVideoQuality] = useState("high");
-  const [controllerScheme, setControllerScheme] = useState("classic");
   const [activeIndex, setActiveIndex] = useState(0);
-  const menuOptions: (null | "audio" | "video" | "controller" | "reset")[] = [
-    "audio", "video", "controller", "reset"];
+  const menuOptions: (null | "audio" | "reset")[] = ["audio", "reset"];
 
   const handleReset = () => {
     setAudioOn(true);
-    setVideoQuality("high");
-    setControllerScheme("classic");
+    setVolume(0.5);
   };
 
   const renderMainMenu = () => (
@@ -35,8 +31,7 @@ const Settings: React.FC = () => {
           }}
         >
           {option === "audio" && "Audio Settings"}
-          {option === "video" && "Video Settings"}
-          {option === "controller" && "Controller Mapping"}
+          {/* video and controller options removed */}
           {option === "reset" && "Reset to Defaults"}
         </button>
       ))}
@@ -47,9 +42,16 @@ const Settings: React.FC = () => {
     <div className="settings-subsection">
       <div className="setting-pair">
         <p className="setting-label">Toggle audio output:</p>
-        <button onClick={() => setAudioOn(prev => !prev)}>
-          {audioOn ? "Turn Audio Off 🔇" : "Turn Audio On 🔊"}
-        </button>
+        <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+          <label className="toggle-switch" aria-label="Toggle audio">
+            <input
+              type="checkbox"
+              checked={audioOn}
+              onChange={(e) => setAudioOn(e.target.checked)}
+            />
+            <span className="switch-slider" />
+          </label>
+        </div>
       </div>
       <div className="setting-pair">
         <p className="setting-label">Volume:</p>
@@ -66,33 +68,7 @@ const Settings: React.FC = () => {
     </div>
   );
 
-  const renderVideoSettings = () => (
-    <div className="settings-subsection">
-      <div className="setting-pair">
-        <p className="setting-label">Choose video quality:</p>
-        <select value={videoQuality} onChange={(e) => setVideoQuality(e.target.value)}>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-      </div>
-      <button className="back-button" onClick={() => setActiveSection(null)}>← Back</button>
-    </div>
-  );
-
-  const renderControllerSettings = () => (
-    <div className="settings-subsection">
-      <div className="setting-pair">
-        <p className="setting-label">Select control scheme:</p>
-        <select value={controllerScheme} onChange={(e) => setControllerScheme(e.target.value)}>
-          <option value="classic">Classic</option>
-          <option value="modern">Modern</option>
-          <option value="custom">Custom</option>
-        </select>
-      </div>
-      <button className="back-button" onClick={() => setActiveSection(null)}>← Back</button>
-    </div>
-  );
+  // video and controller settings removed
 
   useEffect(() => { // Volume control
     if (audioRef.current) {
@@ -123,23 +99,14 @@ const Settings: React.FC = () => {
 
   return (
     <div className="settings-page">
-      <h1>
-        {activeSection === "audio"
-          ? "Audio Settings"
-          : activeSection === "video"
-          ? "Video Settings"
-          : activeSection === "controller"
-          ? "Controller Mapping"
-          : "Settings"}
-      </h1>
+      <h1>{activeSection === "audio" ? "Audio Settings" : "Settings"}</h1>
       {activeSection === null && (
         <button onClick={() => navigate("/emulators")}>Back to Emulators</button>
       )}
 
       {activeSection === null && renderMainMenu()}
       {activeSection === "audio" && renderAudioSettings()}
-      {activeSection === "video" && renderVideoSettings()}
-      {activeSection === "controller" && renderControllerSettings()}
+  {/* video and controller sections removed */}
     </div>
   );
 };
