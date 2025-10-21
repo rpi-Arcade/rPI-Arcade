@@ -88,8 +88,6 @@
 .game_recommendations {
   padding: 2%;
   margin: 10px;
-  border: 2px solid white;
-  /* border-radius: 20px; */
   position: absolute;
   color: white;
   font-family: 'YourFontName';
@@ -197,4 +195,5 @@
   /* min-height: 25%; */
   z-index: -5;
   transform: rotate(90deg); 
+
 }
