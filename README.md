@@ -13,7 +13,8 @@ Playstation Portable (PSP): [ppsspp](https://github.com/hrydgard/ppsspp) <br />
 Sega Genesis: [Genesis-Plus-GX](https://github.com/ekeeke/Genesis-Plus-GX) <br />
 Super Nintendo Entertainment System: [snes9x](https://github.com/snes9xgit/snes9x) <br />
 
-
+## Background Used
+[Earthbound-Battle-Backgrounds-JS] (https://gjtorikian.online/Earthbound-Battle-Backgrounds-JS/)
 
 ## Project Documents
 [Parts and Emulator List](https://docs.google.com/spreadsheets/d/1ALpfdckvdpH38KOAA2tQCqkrMmXP1Gw3A8R0yB0zqGg/edit?usp=sharing) <br />
