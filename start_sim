@@ -12,7 +12,7 @@ tmux send-keys -t arcade "cd electron_app/backend && source ~/myenv/bin/activate
 
 Pane 3: Frontend
 tmux split-window -h -t arcade
-tmux send-keys -t arcade "cd electron_app/frontend && npm run dev" C-m
+tmux send-keys -t arcade "cd electron_app/frontend && npm i && npm run dev" C-m
 
 Attach to session
 tmux attach -t arcade
