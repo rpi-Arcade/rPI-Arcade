@@ -29,7 +29,7 @@
       "image": "/emu/genesisPlusGX.png",
       "text": "genesisPlusGX",
       "className": "box-genesis",
-      "description": "Genesis Plus GX is a multi-system emulator that primarily focuses on Sega systems. It supports the Sega Genesis/Mega Drive, Sega CD, Master System, Game Gear, and SG-1000. The emulator offers high accuracy and various enhancement options.",
+      "description": "Genesis Plus GX is a SEGA multi-system emulator supporting Sega Genesis/Mega Drive, Sega CD, Master System, Game Gear, and SG-1000. The emulator offers high accuracy, save states, and various enhancement options.",
       "games": [
       "Sonic the Hedgehog 2",
       "Streets of Rage 2",
@@ -42,7 +42,7 @@
       "image": "/emu/Mesen.png",
       "text": "Mesen",
       "className": "box-Mesen",
-      "description": "Mesen is a high-accuracy NES and Famicom emulator. It also supports other 8-bit Nintendo systems like the Game Boy and Game Boy Color. Mesen is known for its cycle-accurate emulation and extensive debugging features.",
+      "description": "Mesen is a high-accuracy multi-system emulator known for it's NES and Game Boy compatibility. It has cycle-accurate emulation, visual enchancements, and extensive debugging features.",
       "games": [
       "Super Mario Bros. 3",
       "The Legend of Zelda",
@@ -55,7 +55,7 @@
       "image": "/emu/mupen64plus.png",
       "text": "Mupen",
       "className": "box-Mupen",
-      "description": "Mupen64Plus is an open-source Nintendo 64 emulator. It provides good compatibility with the N64 game library and supports features like high-resolution textures, save states, and various audio and video plugins.",
+      "description": "Mupen64Plus is a highly compatible Nintendo 64 emulator. It provides high-resolution textures, save states, and smooth audio plugins. More advanced feautres are its cheat system and rumble pack support.",
       "games": [
       "Super Mario 64",
       "The Legend of Zelda: Ocarina of Time",
