@@ -94,6 +94,11 @@
   line-height: 35px;
 }
 
+.standardButton {
+  left: 2%;
+  top: 1%;
+}
+
 .creator_header {
   font-size: clamp(35px, 2vw, 35px);
   text-decoration: underline;
