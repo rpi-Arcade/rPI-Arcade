@@ -81,7 +81,7 @@
       "image": "/emu/PCSX.png",
       "text": "PCSX2",
       "className": "box-PCSX",
-      "description": "PCSX2 is a PlayStation 2 emulator that allows users to play PS2 games on PC. It offers features like improved graphics, save states, and cheat codes. PCSX2 has high compatibility with the PS2 game library and continues to be actively developed.",
+      "description": "PCSX2 is a PlayStation 2 emulator that allows users to play PS2 games on PC. It supports high graphics, save states, and cheat codes. PCSX2 has high compatibility with the PS2 game library and continues to be actively developed.",
       "games": [
       "Shadow of the Colossus",
       "Final Fantasy X",
@@ -94,7 +94,7 @@
       "image": "/emu/ppsspp.png",
       "text": "PPSSPP",
       "className": "box-PPSSPP",
-      "description": "PPSSPP (PlayStation Portable Simulator Suitable for Playing Portably) is a PSP emulator that runs on various platforms. It offers enhanced graphics, save states, and network play features, allowing users to enjoy PSP games with improved visuals.",
+      "description": "PPSSPP (PlayStation Portable Simulator Suitable for Playing Portably) is a PSP emulator that runs on multiple platforms. It offers enhanced graphics, save states, and network play features, allowing users to enjoy PSP games with improved visuals.",
       "games": [
       "God of War: Chains of Olympus",
       "Crisis Core: Final Fantasy VII",
@@ -107,7 +107,7 @@
       "image": "/emu/redream.png",
       "text": "Redream",
       "className": "box-Redream",
-      "description": "Redream is a Sega Dreamcast emulator known for its ease of use and good performance. It supports high-resolution rendering, save states, and controller remapping, providing an accessible way to play Dreamcast games on modern systems.",
+      "description": "Redream is a Sega Dreamcast emulator known for its easy setup, simple interface, and quality performance. It supports high-resolution rendering, save states, and controller remapping for accessibility.",
       "games": [
       "Sonic Adventure 2",
       "Jet Set Radio",
