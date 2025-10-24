@@ -63,47 +63,41 @@
 .canvas-container {
   position: absolute;
   z-index: 1;
-  left: 10%;
-  top:30%;
-  margin-left:2%;
-
+  left: 15%;
+  right: 35%;
+  top: 8%;
 }
 
 .emulator_summary {
   position: absolute;
-  right: 13%;
-  top: 10%;
-  width: 27%;
+  left: 18%;
+  right: 18%;
+  top: 50%;
   color: white;
   text-align:center;
-  /* font-size: 2vw; */
   font-size: clamp(20px, 2vw, 40px);
   z-index: 1;
   font-family: 'YourFontName';
-  /* width: 30%; */
-  /* text-align: center; */
-
+  line-height: 40px;
 }
 
 .game_recommendations {
-  padding: 2%;
-  margin: 10px;
-  border: 2px solid white;
-  /* border-radius: 20px; */
   position: absolute;
   color: white;
+  font-size: clamp(20px, 2vw, 40px);
   font-family: 'YourFontName';
   right: 10%;
-  bottom: 10%;
+  left: 45%;
+  top: 15%;
   z-index: 1;
   text-align: center;
-  width: 30%;
-  height: 30%;
+  line-height: 35px;
 }
 
 .creator_header {
-  font-size: clamp(20px, 2vw, 35px);
-
+  font-size: clamp(35px, 2vw, 35px);
+  text-decoration: underline;
+  line-height: 65px;
 }
 
 .actual_games {
@@ -165,7 +159,7 @@
 
 .Link{
   width:clamp(100px, 20vw, 250px);
-  z-index: 2;
+  z-index: 1;
   position:absolute;
   left:10px;
   bottom:10px;

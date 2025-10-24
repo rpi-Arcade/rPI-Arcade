@@ -119,6 +119,7 @@ const DetailsMain: React.FC<DetailsMainProps> = ({ emulatorName }) => {
       {selectedEmulator ? (
         <>
           <div className="emulator_summary">
+            <h1 className="creator_header">{emulatorName}</h1>
             <p>{selectedEmulator.description}</p>
           </div>
           <div className="game_recommendations">
