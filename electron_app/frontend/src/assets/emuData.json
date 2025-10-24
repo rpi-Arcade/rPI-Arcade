@@ -3,7 +3,7 @@
       "image": "/emu/SNES.png",
       "text": "SNES",
       "className": "box-snes",
-      "description": "SNES emulators allow you to play Super Nintendo Entertainment System games on modern devices. Popular SNES emulators include bsnes, Snes9x, and ZSNES, offering high compatibility and features like save states, cheat codes, and graphical enhancements1",
+      "description": "SNES emulators allow you to play games from the Super Nintendo Entertainment System on modern devices. Higan is recommended for fast computers while Snes9x has a friendlier UI. Both offer high compatibility and features like save states, cheat codes, and graphical enhancements.",
       "games": [
       "Super Mario World",
       "The Legend of Zelda: A Link to the Past",
@@ -16,7 +16,7 @@
       "image": "/emu/Desmume.png",
       "text": "Desmume",
       "className": "box-desmume",
-      "description": "DeSmuME is a Nintendo DS emulator that enables playing DS games on computers. It supports features like save states, cheat codes, and screen layout customization. DeSmuME is known for its high compatibility with the DS game library.",
+      "description": "DeSmuME is a Nintendo DS emulator for modern devices. It supports save states, cheat codes, and screen magnification if wanted. DeSmuME is known for its quality 3D rendering and high compatibility with the DS game library.",
       "games": [
       "Mario Kart DS",
       "Pokémon HeartGold/SoulSilver",
