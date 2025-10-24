@@ -10,7 +10,7 @@ import { useController } from "../ControllerContext";
 const gifs = [
   '/images/EB1.gif',
   '/images/EB2.gif',
-  // '../assets/EB3.gif',
+  '/images/EB3.gif',
   // '../assets/EB4.gif',
 ];
 
@@ -28,6 +28,8 @@ useEffect(() => { //use random gif for background, unless theme is set
     setRandomGif("/images/EB1.gif");
   } else if (savedTheme === "squares") {
     setRandomGif("/images/EB2.gif");
+  } else if (savedTheme === "diamonds") {
+    setRandomGif("/images/EB3.gif");
   } else {
     const randomIndex = Math.floor(Math.random() * gifs.length);
     setRandomGif(gifs[randomIndex]);
