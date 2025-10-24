@@ -74,7 +74,7 @@
 .push-start {
   font-size: 24px;
   color: white;
-  top: 50%;
+  top: 47%;
   position: absolute;
   animation: flash 1s infinite; /* Flash every second */
   text-transform: uppercase;

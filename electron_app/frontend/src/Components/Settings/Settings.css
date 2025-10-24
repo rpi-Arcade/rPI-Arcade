@@ -123,3 +123,8 @@ select:focus, button:focus {
 .toggle-switch input:checked + .switch-slider:before {
   transform: translateX(24px);
 }
+
+.top-banner, .bot-banner {
+  pointer-events: none; 
+  z-index: 10;
+}

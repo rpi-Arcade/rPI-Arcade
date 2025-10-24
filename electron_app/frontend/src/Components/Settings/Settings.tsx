@@ -1,6 +1,9 @@
 import React, { useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import "./Settings.css";
+import TopBanner from '../Banners/TopBanner.tsx';
+import BotBanner from '../Banners/BotBanner.tsx';
+import logo from "/images/Logo.png";
 import { useController } from "../ControllerContext";
 
 const Settings: React.FC = () => {
@@ -17,6 +20,10 @@ const Settings: React.FC = () => {
   const handleReset = () => {
     setAudioOn(true);
     setVolume(0.5);
+  };
+
+  const handleLogoClick = () => {
+    navigate("/emulators");
   };
 
   const renderMainMenu = () => (
@@ -91,22 +98,22 @@ const Settings: React.FC = () => {
       else setActiveSection(selected as typeof activeSection);
     });
   
-    registerButtonHandler("B", () => {
-      if (activeSection === null) navigate("/emulators");
-      else setActiveSection(null);
-    });
+     registerButtonHandler("B", handleLogoClick);
   }, [activeIndex, activeSection]);
 
   return (
     <div className="settings-page">
+      <TopBanner />
+      <BotBanner />
       <h1>{activeSection === "audio" ? "Audio Settings" : "Settings"}</h1>
       {activeSection === null && (
-        <button onClick={() => navigate("/emulators")}>Back to Emulators</button>
+        <button onClick={handleLogoClick}>Back to Emulators</button>
       )}
 
       {activeSection === null && renderMainMenu()}
       {activeSection === "audio" && renderAudioSettings()}
-  {/* video and controller sections removed */}
+            {/* This logo is invisible & just for testing purposes; on click, returns to emulators screen. */}
+      <img src={logo} alt="logo" className="logo" style={{ opacity: 0, zIndex: "99" }} onClick={handleLogoClick} />
     </div>
   );
 };
