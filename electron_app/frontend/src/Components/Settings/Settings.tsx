@@ -13,13 +13,16 @@ const Settings: React.FC = () => {
   const [activeSection, setActiveSection] = useState<null | "audio">(null);
   const [audioOn, setAudioOn] = useState(true);
   const [volume, setVolume] = useState(0.5);
+    const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "random");
   const audioRef = React.useRef<HTMLAudioElement>(null); 
   const [activeIndex, setActiveIndex] = useState(0);
-  const menuOptions: (null | "audio" | "reset")[] = ["audio", "reset"];
+  const menuOptions: (null | "audio" | "theme" | "reset")[] = ["audio", "theme", "reset"];
 
   const handleReset = () => {
     setAudioOn(true);
-    setVolume(0.5);
+    setVolume(0.5);    
+    setTheme("random");
+    localStorage.setItem("theme", "random");
   };
 
   const handleLogoClick = () => {
@@ -38,7 +41,7 @@ const Settings: React.FC = () => {
           }}
         >
           {option === "audio" && "Audio Settings"}
-          {/* video and controller options removed */}
+          {option === "theme" && "Theme Settings"}
           {option === "reset" && "Reset to Defaults"}
         </button>
       ))}
@@ -75,7 +78,27 @@ const Settings: React.FC = () => {
     </div>
   );
 
-  // video and controller settings removed
+  const renderThemeSettings = () => (
+    <div className="settings-subsection">
+      <div className="setting-pair">
+        <p className="setting-label">Choose Theme:</p>
+        <select
+          value={theme}
+          onChange={(e) => {
+            setTheme(e.target.value);
+            localStorage.setItem("theme", e.target.value);
+          }}
+        >
+          <option value="random">Random</option>
+          <option value="circles">Circles</option>
+          <option value="squares">Squares</option>
+        </select>
+      </div>
+      <button className="back-button" onClick={() => setActiveSection(null)}>
+        ← Back
+      </button>
+    </div>
+  );
 
   useEffect(() => { // Volume control
     if (audioRef.current) {
@@ -112,7 +135,8 @@ const Settings: React.FC = () => {
 
       {activeSection === null && renderMainMenu()}
       {activeSection === "audio" && renderAudioSettings()}
-            {/* This logo is invisible & just for testing purposes; on click, returns to emulators screen. */}
+      {activeSection === "theme" && renderThemeSettings()}
+      {/* This logo is invisible & just for testing purposes; on click, returns to emulators screen. */}
       <img src={logo} alt="logo" className="logo" style={{ opacity: 0, zIndex: "99" }} onClick={handleLogoClick} />
     </div>
   );
