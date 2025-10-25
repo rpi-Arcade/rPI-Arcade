@@ -3,8 +3,8 @@ import React, { useEffect, useRef } from 'react';
 interface RotatingImageProps {
   src: string; // Path to the image
   size?: number; // Size of the image in pixels (optional)
-  width: string;
-  height: string;
+  width?: string;
+  height?: string;
 }
 
 const RotatingImage: React.FC<RotatingImageProps> = ({ 
