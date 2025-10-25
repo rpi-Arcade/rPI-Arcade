@@ -3,9 +3,14 @@ import React, { useEffect, useRef } from 'react';
 interface RotatingImageProps {
   src: string; // Path to the image
   size?: number; // Size of the image in pixels (optional)
+  width: string;
+  height: string;
 }
 
-const RotatingImage: React.FC<RotatingImageProps> = ({ src }) => {
+const RotatingImage: React.FC<RotatingImageProps> = ({ 
+  src, 
+  width = '550px',
+  height = '425px', }) => {
   const imageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,10 +36,11 @@ const RotatingImage: React.FC<RotatingImageProps> = ({ src }) => {
     <div
       ref={imageRef}
       style={{
-        width: `500px`,
-        height: `360px`,
+        width,
+        height,
         backgroundImage: `url(${src})`,
-        backgroundSize: 'cover',
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
         // backgroundPosition: 'center',
         transformStyle: 'preserve-3d',
         transition: 'transform 0.1s linear',
