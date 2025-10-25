@@ -81,11 +81,6 @@
 }
 
 .game_recommendations {
-<<<<<<< HEAD
-  padding: 2%;
-  margin: 10px;
-=======
->>>>>>> 4ca05814329e38c6a13e2319f044c027649a4020
   position: absolute;
   color: white;
   font-size: clamp(20px, 2vw, 40px);
