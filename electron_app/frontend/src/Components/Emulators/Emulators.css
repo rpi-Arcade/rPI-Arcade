@@ -18,6 +18,7 @@
   justify-content: flex-end;
 }
 
+
 .mascotGIFWrapper {
   position: fixed;
   left: 75%;
@@ -25,10 +26,18 @@
   transform: translate(-50%, -50%);
   z-index: 1;
   height: auto;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  pointer-events: none;
 }
 
 .mascotGIF {
   width: 70%;
+}
+
+.mascotGIFWrapper.visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .carousel {
@@ -109,43 +118,6 @@
   flex-direction: column;
 }
 
-.button-container {
-  position: absolute;
-  top: 75%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80%;
-  justify-content: space-between;
-  z-index: 99;
-}
-
-.arrow-button {
-  font-size: 24px;
-  color: white;
-  border: none;
-  cursor: pointer;
-  margin: 0 20px;
-  background-color: transparent;
-  background-size: 100% 100%;
-  width: 120px;
-  height: 50px;
-  background-repeat: no-repeat;
-}
-
-.left-arrow {
-  background-image: url("../images/left arrow.png");
-}
-
-.right-arrow {
-  background-image: url("../images/right arrow.png");
-}
-
-.left-button:active,
-.right-button:active {
-  color: var(--primary-red); 
-}
-
 /* ============================================== */
 .bottom {
   color: white;
@@ -198,12 +170,6 @@
   backface-visibility: hidden;
 }
 
-/*
-.spinning {
-  animation: infiniteRotateY 3s linear infinite;
-  /* transform-style: preserve-3d; 
-} */
-
 @keyframes bounceY {
   0%, 100% {
     transform: translateY(0);
@@ -216,24 +182,6 @@
 .bouncing {
   animation: bounceY 1.5s ease-in-out infinite;
 }
-
-
-/* No longer used: 
-@keyframes pulseGlow {
-  0%, 100% {
-    box-shadow:
-      0 0 10px rgba(255, 255, 255, 0.3),
-      0 0 20px rgba(255, 255, 255, 0.15),
-      0 0 30px rgba(255, 255, 255, 0.05);
-  }
-  50% {
-    box-shadow:
-      0 0 20px rgba(255, 255, 255, 0.6),
-      0 0 35px rgba(255, 255, 255, 0.3),
-      0 0 45px rgba(255, 255, 255, 0.15);
-  }
-}
-*/
 
 .settings-icon {
   position: absolute;

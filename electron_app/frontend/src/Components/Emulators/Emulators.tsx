@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -42,8 +42,17 @@ const Emulators: React.FC<EmulatorsProps> = ({
 }) => {
   const navigate = useNavigate();
   const { registerHandler, registerButtonHandler } = useController();
+  const [mascotVisible, setMascotVisible] = useState(false);
+
+  const secretCode = [
+    'ArrowUp', 'ArrowUp',
+    'ArrowDown', 'ArrowDown', 
+    'ArrowLeft', 'ArrowRight', 
+    'ArrowLeft', 'ArrowRight'
+  ];
 
   //For keyboard inputs
+  const secretCodePosition = useRef(0);
   const lastKeyPress = useRef(0);
   const COOLDOWN = 250;
 
@@ -87,21 +96,34 @@ const Emulators: React.FC<EmulatorsProps> = ({
 
   // Arrow Key Function 
 
-    useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+  useEffect(() => {
+  const handleKeyDown = (e: KeyboardEvent) => {
 
-      const now = Date.now();
-      if (now - lastKeyPress.current < COOLDOWN) return;
+    if (e.key === secretCode[secretCodePosition.current]) {
+      secretCodePosition.current++;
+    } else {
+      secretCodePosition.current = (e.key === secretCode[0]) ? 1 : 0;
+    }
+
+    if (secretCodePosition.current === secretCode.length) {
+      setMascotVisible(true); // Show the mascot!
+      secretCodePosition.current = 0; // Reset for next time
+    }
+
+    const now = Date.now();
+    if (now - lastKeyPress.current < COOLDOWN) return;
+    
+
+    if (e.key === "ArrowLeft") {
       lastKeyPress.current = now;
-
-      if (e.key === "ArrowLeft") {
-        handleLeftMove();
-        playMoveSound();
-      } else if (e.key === "ArrowRight") {
-        handleRightMove();
-        playMoveSound();
-      }
-    };
+      handleLeftMove();
+      playMoveSound();
+    } else if (e.key === "ArrowRight") {
+      lastKeyPress.current = now;
+      handleRightMove();
+      playMoveSound();
+    } 
+  };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -154,7 +176,7 @@ const Emulators: React.FC<EmulatorsProps> = ({
       <BotBanner />
       <FiSettings className="settings-icon" onClick={handleSettingsClick} />
       <img src={logo} alt="logo" className="logo" style={{ opacity: 0, zIndex:"99"}} onClick={handleLogoClick}/>
-      <div className="mascotGIFWrapper">
+      <div className={`mascotGIFWrapper ${mascotVisible ? "visible" : ""}`}>
           <img src={mascotGIF} alt="mascot gif" className="mascotGIF"/>
         </div>
       {/* This logo is invisible & just for testing purposes; on click, returns to startup screen. */}
@@ -244,11 +266,6 @@ const Emulators: React.FC<EmulatorsProps> = ({
             </div>
             );
           })}
-        </div>
-
-        <div className="button-container">
-          <button className="arrow-button left-arrow" onClick={handleLeftMove} />
-          <button className="arrow-button right-arrow" onClick={handleRightMove} />
         </div>
       </div>
 
