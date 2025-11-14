@@ -256,6 +256,21 @@ def device_event(device):
         observer.stop()
         print("USB removed, stopping script")
         
+def list_games_on_usb(usb_base_path):
+    game_list = {}
+
+    for system in game_systems:
+        usb_path = os.path.join(usb_base_path, system)
+        if os.path.exists(usb_path):
+            files = os.listdir(usb_path)
+            #Clean names (remove extensions, remove parentheses info)
+            cleaned = [
+                f.split('(')[0].rsplit('.', 1)[0].strip()
+                for f in files
+            ]
+            game_list[system] = cleaned
+
+    return game_list
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
