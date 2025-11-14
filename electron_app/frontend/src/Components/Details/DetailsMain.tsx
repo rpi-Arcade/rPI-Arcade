@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Rotate from "./Rotating_Image";
 import "./DetailsMain.css";
-// import pixelPanel from "/images/pixelPanel.png";
-import Mario64 from "/images/Mario64.gif";
-import Sonic_Run_Right from "/images/DreamCast_Moving_Right.gif";
-import Sonic_Run_Left from "/images/DreamCast_Moving_Left.gif";
 import { useNavigate } from "react-router-dom";
-import LeftBanner from "../Banners/LeftBanner";
-import RightBanner from "../Banners/RightBanner";
 
 import emuData from '../../assets/emuData.json';
 
 import { useController } from "../ControllerContext";
 
-// Define the shape of each emulator object
 interface Emulator {
   text: string;
   description: string;
@@ -21,9 +14,8 @@ interface Emulator {
   games: string[];
 }
 
-// Define props for the DetailsMain component
 interface DetailsMainProps {
-  emulatorName: string;  // Emulator name passed as a prop
+  emulatorName: string;
 }
 
 const DetailsMain: React.FC<DetailsMainProps> = ({ emulatorName }) => {
@@ -38,13 +30,8 @@ const DetailsMain: React.FC<DetailsMainProps> = ({ emulatorName }) => {
     registerButtonHandler("B", goBack);
   }, [registerButtonHandler]);
 
-
   const [emulators] = useState<Emulator[]>(emuData);
   const [selectedEmulator, setSelectedEmulator] = useState<Emulator | null>(null);
-
-  const [sonicPosition, setSonicPosition] = useState(0); // Sonic's horizontal position
-  const [direction] = useState<"right" | "left">("right"); // Movement direction
-  const [sonicImage, setSonicImage] = useState(Sonic_Run_Right); // Current Sonic image
 
   useEffect(() => {
     if (emulatorName) {
@@ -55,88 +42,61 @@ const DetailsMain: React.FC<DetailsMainProps> = ({ emulatorName }) => {
     }
   }, [emulatorName, emulators]);
 
-  useEffect(() => {
-    let currentDirection = direction; // Local variable to track direction
-
-    const animateSonic = () => {
-      setSonicPosition((prev) => {
-        if (currentDirection === "right") {
-          if (prev >= (window.innerWidth / 2) - 5) {
-            currentDirection = "left"; // Update direction locally
-            setSonicImage(Sonic_Run_Left);
-            return prev - 2; // Start moving left
-          }
-          return prev + 2; // Move right
-        } else {
-          if (prev <= 2) {
-            currentDirection = "right"; // Update direction locally
-            setSonicImage(Sonic_Run_Right);
-            return prev + 2; // Start moving right
-          }
-          return prev - 2; // Move left
-        }
-      });
-
-      requestAnimationFrame(animateSonic);
-    };
-    const animationId = requestAnimationFrame(animateSonic);
-    return () => cancelAnimationFrame(animationId); // Cleanup on unmount
-  }, []); // Empty dependency array to run only once
 
   return (
     <div className="Main_Div">
-      <LeftBanner />
-      <RightBanner />
-      {/* <img className="Side1" src={pixelPanel} alt="S1" /> */}
-      {/* <img className="Side2" src={pixelPanel} alt="S2" /> */}
-      <button className="standardButton active" onClick={goBack}>
-        Back
-      </button>
-      <img className="Mario" src={Mario64} alt="Mario 64" />
 
-      {/* Sonic GIF */}
-      <img
-        className="Link"
-        src={sonicImage}
-        alt="Sonic"
-        style={{ left: `${sonicPosition}px` }}
-      />
+      {/* ADDED: Scanlines effect */}
+      <div className="scanlines"></div>
+      <div className="decorative-pixels"></div>
 
-      {/* Canvas for 3D content */}
+      <div className="container">
+        <div className="header">
+          <button className="back-button" onClick={goBack}>
+            ◄ Back
+          </button>
+          <div className="logo-container">
+            {/* ADDED: Rotating image in center */}
+            <div className="rotating-image-wrapper">
+              <Rotate 
+                src={selectedEmulator?.image ?? "/path/to/fallback-image.webp"} 
+                width="200px"
+                height="200px"
+              />
+            </div>
+            <div className="title-section">
+              <h1 className="main-title">{emulatorName}</h1>
+              <p className="subtitle">Emulator Information</p>
+            </div>
+          </div>
+        </div>
 
-      {/* <Canvas className="canvas-container">
-        <ambientLight intensity={2} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-        <pointLight position={[-10, -10, -10]} color="red" intensity={1} />
-        <Cube
-          src={selectedEmulator?.image ?? "/path/to/fallback-image.webp"} // in case no img found
-        />
-      </Canvas> */}
-      <div className="canvas-container">
-        <Rotate src={selectedEmulator?.image ?? "/path/to/fallback-image.webp"} />
+        <div className="content-grid">
+          {/* ADDED: New structure matching the artifact design */}
+          <div className="recommendations-section">
+            <h2 className="section-title">Creator Recommendations</h2>
+            {selectedEmulator ? (
+              <ul className="game-list">
+                {selectedEmulator.games.map((game, index) => (
+                  <li key={index} className="game-item">► {game}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="no-data">No games available</p>
+            )}
+          </div>
+
+          <div className="info-section">
+            <h2 className="section-title">About This Emulator</h2>
+            {selectedEmulator ? (
+              <p className="info-text">{selectedEmulator.description}</p>
+            ) : (
+              <p className="no-data">No emulator selected or emulator not found.</p>
+            )}
+          </div>
+        </div>
       </div>
-      {/* Display emulator information if found */}
-      {selectedEmulator ? (
-        <>
-          <div className="emulator_summary">
-            <h1 className="creator_header">{emulatorName}</h1>
-            <p>{selectedEmulator.description}</p>
-          </div>
-          <div className="game_recommendations">
-            <h1 className="creator_header">Creator Recommendations</h1>
-            <ul
-              className="actual_games"
-              style={{ listStyleType: "none" }}
-            >
-              {selectedEmulator.games.map((game, index) => (
-                <li key={index}>{game}</li>
-              ))}
-            </ul>
-          </div>
-        </>
-      ) : (
-        <p>No emulator selected or emulator not found.</p>
-      )}
+
     </div>
   );
 };
