@@ -71,6 +71,17 @@ def start_usb_monitoring():
     # socketio.emit('status', {'message': 'alksjdlkasjdl'})
     # socketio.emit('status', {'message': 'Please remove USB'})
 
+@socketio.on("LIST_GAMES")
+def handle_list_games():
+    mount_point = "/mnt/usb/RetroPie"  # same as copy source
+
+    if not os.path.exists(mount_point):
+        socketio.emit("games_list", {"error": "USB not mounted"})
+        return
+
+    games = list_games_on_usb(mount_point)
+    socketio.emit("games_list", {"games": games})
+
 @socketio.on('STOP')
 def stop_usb_monitoring():
     global observer
