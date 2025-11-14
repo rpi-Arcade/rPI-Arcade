@@ -43,3 +43,7 @@ Course name: Rensselaer Manufacturing and Prototyping Laboratories-Safety Orient
 According to the saftey quiz, if we are to cut MDF wood we must work in either the Architecture Fabrication Shop or the JEC Machine Shop. 
 
 The Lab Saftey Guidlines can be found [here](https://rpi.app.box.com/s/cz8ni1czsywwe29hl9b6yf53m59q918l)
+
+### Ordering Wood to RPI
+
+RPI has connections with Conneticut Wood in Albany. We are able to order wood from them by calling them or by emailing [John Szczesniak](szczej@rpi.edu). Their main website is [here](https://connply.com/)
