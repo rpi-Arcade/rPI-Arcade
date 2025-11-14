@@ -114,11 +114,31 @@ const Flashdrive: React.FC = () => {
     };
     console.log("attach listeners")
 
+    const handleGameList = (data) => {
+      if (data.error) {
+        console.log("USB not mounted yet.");
+        return;
+      }
+
+      console.log("Games detected:", data.games);
+
+      setLogMessages((prev) => [
+        ...prev,
+        "Games detected on USB:",
+        ...Object.entries(data.games).flatMap(([system, list]) =>
+          list.length > 0
+            ? [`${system.toUpperCase()}: ${list.join(", ")}`]
+            : []
+        )
+      ]);
+    };
+
     // Attach socket listeners
     socketRef.current.on("status", handleStatus);
     socketRef.current.on("summary", handleSummary);
     socketRef.current.on("connect_error", handleConnectError);
     socketRef.current.on("connect_failed", handleConnectFailed);
+    socketRef.current.on("games_list", handleGameList);
 
     // Cleanup listeners on unmount & disconnect the socket
     return () => {
