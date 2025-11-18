@@ -1,11 +1,70 @@
-.startup {
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
+.startup .middle {
+  position: absolute;
+  top: 40%;
+  width: 100%;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+}
+.startup .middle h1 {
+  margin: 0;
+  padding: 5px 0;
+  scale: 1.5;
+  text-transform: uppercase;
+}
+.startup .middle p {
+  margin: 0;
+  padding: 5px 0; 
+  scale: 1.5;
 }
 
+.push-start {
+  font-size: 24px;
+  color: white;
+  top: 50%;
+  position: absolute;
+  animation: flash 1s infinite;
+  text-transform: uppercase;
+  z-index: 10;
+}
+
+@keyframes flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.startup .text {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 0 5px 0;
+}
+
+.attractMode {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.attractMode p {
+  margin: 0;
+  padding: 250px 0;
+  scale: 1.5;
+}
+
+/*
+.startup {
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+}
+*/
+
 .titleScreen {
-  height: 100vh; /* Full viewport height */
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -34,19 +93,101 @@
   height: 100vh;
   width: 100vw;
   z-index: -6;
-  /* background: url(../assets/EB.gif) repeat 0 0; */
-  background-size: 250px 250px;
-  background-attachment: fixed; 
-  animation: animate-bg 5.76s infinite linear;
+  perspective: 500px;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    #000000 0%,
+    #1a0000 20%,
+    #330000 50%,
+    #4d0000 100%
+  );
 }
 
-@keyframes animate-bg {
+.backDrop::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(2px 2px at 20% 30%, white, transparent),
+    radial-gradient(2px 2px at 60% 70%, white, transparent),
+    radial-gradient(1px 1px at 50% 50%, white, transparent),
+    radial-gradient(1px 1px at 80% 10%, white, transparent),
+    radial-gradient(2px 2px at 90% 60%, white, transparent),
+    radial-gradient(1px 1px at 33% 80%, white, transparent),
+    radial-gradient(2px 2px at 15% 90%, white, transparent),
+    radial-gradient(1px 1px at 75% 25%, white, transparent),
+    radial-gradient(1px 1px at 25% 15%, white, transparent),
+    radial-gradient(2px 2px at 45% 45%, white, transparent);
+  background-size: 200% 200%;
+  animation: stars 3s ease-in-out infinite alternate;
+  z-index: 1;
+}
+
+@keyframes stars {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.backDrop::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70%;
+  transform-style: preserve-3d;
+  transform: rotateX(60deg);
+  transform-origin: bottom;
+  z-index: 2;
+  
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 49px,
+      rgba(255, 0, 0, 0.8) 49px,
+      rgba(255, 0, 0, 0.8) 51px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 49px,
+      rgba(255, 0, 0, 0.6) 49px,
+      rgba(255, 0, 0, 0.6) 51px
+    );
+  background-size: 100% 200%, 100% 200%;
+  background-position: 0 0, 0 0;
+  animation: moveGrid 4s linear infinite;
+}
+
+@keyframes moveGrid {
+  0% {
+    background-position: 0 0, 0 0;
+  }
   100% {
-      background-position: 200px -200px;
+    background-position: 0 50px, 0 50px;
   }
 }
 
-/* ============================================== */
+.horizon-glow {
+  position: absolute;
+  bottom: 30%;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 0, 0, 0.3) 0%,
+    rgba(139, 0, 0, 0.2) 30%,
+    transparent 70%
+  );
+  filter: blur(20px);
+  pointer-events: none;
+  z-index: 3;
+}
+
 .startup .middle {
   position: absolute;
   top: 40%;
@@ -60,14 +201,14 @@
   position: relative;
 }
 .startup .middle h1 {
-  margin: 0; /* Remove default margins to prevent misalignment */
-  padding: 5px 0; /* Add some padding for spacing */
+  margin: 0;
+  padding: 5px 0;
   scale: 1.5;
   text-transform: uppercase;
 }
 .startup .middle p {
-  margin: 0; /* Remove default margins to prevent misalignment */
-  padding: 5px 0; /* Add some padding for spacing */
+  margin: 0;
+  padding: 5px 0;
   scale: 1.5;
 }
 
@@ -76,7 +217,7 @@
   color: white;
   top: 50%;
   position: absolute;
-  animation: flash 1s infinite; /* Flash every second */
+  animation: flash 1s infinite;
   text-transform: uppercase;
   z-index: 10;
 }
@@ -99,7 +240,7 @@
   flex-direction: column;
 }
 .attractMode p {
-  margin: 0; /* Remove default margins to prevent misalignment */
-  padding: 250px 0; /* Add some padding for spacing */
+  margin: 0;
+  padding: 250px 0;
   scale: 1.5;
 }

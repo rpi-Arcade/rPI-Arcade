@@ -1,32 +1,34 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Startup.css";
-import TopBanner from '../Banners/TopBanner.tsx';
-import BotBanner from '../Banners/BotBanner.tsx';
 import vid from '../../assets/rpi_arcade4.mp4';
 import demo from '../../assets/Marvel Super Heroes (Capcom 1995)  Attract Mode 60fps.mp4';
 import { useController } from "../ControllerContext";
 
+/*
 const gifs = [
   '/images/EB1.gif',
   '/images/EB2.gif',
   // '../assets/EB3.gif',
   // '../assets/EB4.gif',
 ];
+*/
 
 const Startup = () => {
   const [showTitle, setShowTitle] = useState(false);
   const [inAttractMode, setInAttractMode] = useState(false);
   const navigate = useNavigate();
   const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [randomGif, setRandomGif] = useState("");
+  //const [randomGif, setRandomGif] = useState("");
   const { registerButtonHandler } = useController();
 
+  /*
   useEffect(() => {
     // Select a random GIF when the component mounts
     const randomIndex = Math.floor(Math.random() * gifs.length);
     setRandomGif(gifs[randomIndex]);
   }, []);
+  */
 
   const [videoPlayed, setVideoPlayed] = useState(() => { // Use sessionStorage to store state PER SESSION (changes on refresh)
     return sessionStorage.getItem("videoPlayed") === "true"; // Defaults to false if not found
@@ -126,13 +128,9 @@ const Startup = () => {
         </div>
       ) : ( // If the intro already played, show title screen
         <div className="titleScreen">
-          <TopBanner />
-          <BotBanner />
-          <div className='backDrop'
-            style={{
-              background: `url(${randomGif}) repeat 0 0`,
-            }}
-          />
+          <div className='backDrop'>
+            <div className="horizon-glow"></div>
+          </div>
           {/* Title Section */}
           <div className="middle">
             <h1>rPi Arcade</h1>
