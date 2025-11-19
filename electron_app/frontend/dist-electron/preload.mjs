@@ -21,5 +21,6 @@ electron.contextBridge.exposeInMainWorld("ipcRenderer", {
   // ...
 });
 electron.contextBridge.exposeInMainWorld("electronAPI", {
-  startEmulationStation: () => electron.ipcRenderer.send("start-emulationstation")
+  startEmulationStation: () => electron.ipcRenderer.send("start-emulationstation-full-launch"),
+  closeWindowOnGameLaunch: () => electron.ipcRenderer.send("game-launch-window-manager")
 });

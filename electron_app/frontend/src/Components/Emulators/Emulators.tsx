@@ -24,8 +24,17 @@ interface EmulatorsProps {
   setPosition: React.Dispatch<React.SetStateAction<number>>;
 }
 
+interface EmulatorItem {
+  image: string;
+  text: string;
+  className: string;
+  description: string;
+  games: string[];
+}
+
 interface ElectronAPI {
   startEmulationStation: () => void;
+  closeWindowOnGameLaunch: () => void;
 }
 
 declare global {
@@ -34,6 +43,19 @@ declare global {
   }
 }
 // ===========================================
+
+// Mapping Dictionary - Translates the 'text' field from emuData.json to the actual ROMs folder name needed by the backend
+const EMULATOR_NAME_MAP: { [key: string]: string } = {
+  "SNES": "snes",
+    "Desmume": "nds",
+    "genesisPlusGX": "megadrive",
+    "Mesen": "nes",
+    "Mupen": "n64",
+    "PCSX": "psx",      // PlayStation 1
+    "PCSX2": "ps2",     // PlayStation 2 (Assumed folder name)
+    "PPSSPP": "psp",
+    "Redream": "dreamcast"
+};
 
 const Emulators: React.FC<EmulatorsProps> = ({
   onEmuClick,
@@ -72,32 +94,115 @@ const Emulators: React.FC<EmulatorsProps> = ({
   const allEmuData = [...emuData, addGamesBox, playGamesBox]; //concat addGamesBox
   const totalBoxes = allEmuData.length;
 
+  const totalEmulatorCount = emuData.length;
+  const addGamesIndex = totalEmulatorCount;
+  const playGamesIndex = totalEmulatorCount + 1;
+
+  const handleFlashdriveSelection = React.useCallback(() => {
+      navigate("/flashdrive");
+  }, [navigate]);
+
+  const handleSettingsClick = React.useCallback(() => {
+      navigate("/settings");
+  }, [navigate]);
+
+  const handleLogoClick = React.useCallback(() => {
+      navigate("/");
+  }, [navigate]); // navigate is stable, so this function is stable
+
+  const handleRightMove = () => {
+    setPosition((prev) => (prev < totalBoxes - 1 ? prev + 1 : 0));
+  };
+
+  const handleLeftMove = () => {
+    setPosition((prev) => (prev > 0 ? prev - 1 : totalBoxes - 1));
+  };
+
+  const handleEmulatorSelection = () => {
+    // 1. Calculate the correct index for the emuData array (always position - 1)
+    const emuIndex = position - 1; 
+    const totalEmulatorCount = emuData.length;
+
+    // Ensure the index is valid for the emuData array
+    if (emuIndex >= 0 && emuIndex < totalEmulatorCount) {
+        // Retrieve the CORRECT emulator data object
+        const selectedEmulator = emuData[emuIndex] as EmulatorItem;
+
+        if (selectedEmulator) {
+            const emulatorName = EMULATOR_NAME_MAP[selectedEmulator.text];
+
+            if (emulatorName) {
+                navigate("/details", { 
+                    state: { 
+                        emulatorName: emulatorName, 
+                        emulatorText: selectedEmulator.text 
+                    } 
+                });
+                onEmuClick(emuIndex);
+            } else {
+                console.error(`Error: Could not find ROM folder mapping for text: ${selectedEmulator.text}`);
+            }
+        }
+    } else {
+        // This should ideally not happen if the caller ensures position is on an emulator
+        console.error(`Invalid position (${emuIndex}) for emulator selection.`);
+    }
+  };
+
+  const playMoveSound = () => {
+    if (moveAudioRef.current) {
+      moveAudioRef.current.currentTime = 0;
+      moveAudioRef.current.play().catch(() => {});
+    }
+  };
+
+  // Stop app and open EmulationStation; sends command to Electron backend via IPC
+  const handlePlaySelection = () => {
+    console.log("sending msg")
+    window.electronAPI.startEmulationStation();
+    console.log("returning from sending msg")
+  };
+
   // Register controller handlers for this page
   useEffect(() => {
-    registerHandler("left", handleLeftMove);
-    registerHandler("right", handleRightMove);
+    //registerHandler("left", handleLeftMove);
+    //registerHandler("right", handleRightMove);
     registerButtonHandler("B", handleLogoClick);
 
     moveAudioRef.current = new Audio(moveSound);
     moveAudioRef.current.volume = 0.5;
 
-    if (position === totalBoxes - 1) {
-      // console.log("flashdrive reg")
-      registerButtonHandler("X", handleFlashdriveSelection);
-    } else if (position === 0) {
-      // console.log("play reg")
-      registerButtonHandler("X", handlePlaySelection);
+    registerButtonHandler("X", () => { console.log("X press ignored.") });
+
+    if (position >= 0 && position < totalEmulatorCount) {
+        registerButtonHandler("X", handleEmulatorSelection);
+    } 
+    // 2. The USB box is at totalEmulatorCount
+    else if (position === addGamesIndex) {
+        registerButtonHandler("X", handleFlashdriveSelection);
+    } 
+    // 3. The LAUNCH box is at the very end
+    else if (position === playGamesIndex) {
+        registerButtonHandler("X", handlePlaySelection);
     }
-    else {
-      // console.log("register for emu")
-      registerButtonHandler("X", handleEmulatorSelection);
-    }
-  }, [position, registerHandler, registerButtonHandler]);
+
+    return () => {
+      //registerHandler("left", () => {});
+      //registerHandler("right", () => {});
+      registerButtonHandler("B", () => {});
+      registerButtonHandler("X", () => {});
+    };
+  }, [position, registerHandler, registerButtonHandler, addGamesIndex, playGamesIndex, totalEmulatorCount]);
 
   // Arrow Key Function 
 
-  useEffect(() => {
+useEffect(() => {
   const handleKeyDown = (e: KeyboardEvent) => {
+
+    if (e.key === "Escape") {
+        handleLogoClick(); // Navigates to the root path ("/")
+        return; // Stop processing other keys
+    }
 
     if (e.key === secretCode[secretCodePosition.current]) {
       secretCodePosition.current++;
@@ -126,49 +231,8 @@ const Emulators: React.FC<EmulatorsProps> = ({
   };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-    }, []);
-
-  
-
-  const handleRightMove = () => {
-    setPosition((prev) => (prev < totalBoxes - 1 ? prev + 1 : 0));
-  };
-
-  const handleLeftMove = () => {
-    setPosition((prev) => (prev > 0 ? prev - 1 : totalBoxes - 1));
-  };
-
-  const handleEmulatorSelection = () => {
-    // console.log(position - 1)
-    onEmuClick(position - 1);
-    navigate("/details");
-  };
-
-  const handleFlashdriveSelection = () => {
-    navigate("/flashdrive");
-  };
-
-  const handleSettingsClick = () => {
-    navigate("/settings");
-  };
-  const handleLogoClick = () => {
-    navigate("/");
-  };
-
-  const playMoveSound = () => {
-    if (moveAudioRef.current) {
-      moveAudioRef.current.currentTime = 0;
-      moveAudioRef.current.play().catch(() => {});
-    }
-  };
-
-  // Stop app and open EmulationStation; sends command to Electron backend via IPC
-  const handlePlaySelection = () => {
-    console.log("sending msg")
-    window.electronAPI.startEmulationStation();
-    console.log("returning from sending msg")
-  };
+  return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleLogoClick, handleLeftMove, handleRightMove]);
 
   return (
     <div className="emulators">

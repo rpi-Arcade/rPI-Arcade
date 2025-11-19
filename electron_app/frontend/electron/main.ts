@@ -90,7 +90,7 @@ app.whenReady().then(() => {
 
   // Frontend will call this function via IPC 
   // This will close our Electron app and start up EmulationStation
-  ipcMain.on("start-emulationstation", () => {
+  ipcMain.on("start-emulationstation-full-launch", () => {
     console.log("Launching EmulationStation...");
 
     // Specify path to the bash script
@@ -132,7 +132,13 @@ app.whenReady().then(() => {
       });
       
     }, 5000); // 5000 milliseconds = 5 seconds
-
   });
 
+  ipcMain.on("game-launch-window-manager", () => {
+    console.log("Game launching. Closing the Electron window...");
+    if (win) {
+      win.close();
+      win = null;
+    }
+  })
 });

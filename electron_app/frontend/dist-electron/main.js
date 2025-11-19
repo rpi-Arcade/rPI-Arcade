@@ -44,7 +44,7 @@ app.on("activate", () => {
 });
 app.whenReady().then(() => {
   createWindow();
-  ipcMain.on("start-emulationstation", () => {
+  ipcMain.on("start-emulationstation-full-launch", () => {
     console.log("Launching EmulationStation...");
     const homeDir = os.homedir();
     const scriptPath = path.resolve(homeDir, "rPI-Arcade/electron_app/backend/boot_to_emulation.sh");
@@ -73,6 +73,13 @@ app.whenReady().then(() => {
         if (stderr) console.error(`Errors: ${stderr}`);
       });
     }, 5e3);
+  });
+  ipcMain.on("game-launch-window-manager", () => {
+    console.log("Game launching. Closing the Electron window...");
+    if (win) {
+      win.close();
+      win = null;
+    }
   });
 });
 export {

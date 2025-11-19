@@ -9,23 +9,22 @@ import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Emulators from '../Emulators/Emulators';
-import DetailsMain from '../Details/DetailsMain.js';
+//import DetailsMain from '../Details/DetailsMain.js';
 import Flashdrive from '../Flashdrive/Flashdrive.tsx';
 import Startup from '../Startup/Startup.tsx';
 import Settings from '../Settings/Settings.tsx';
 import backdrop from "/images/backdrop.png";
 
-import boxData from "../../assets/emuData.json";
+import EmuDetails from '../Emulators/EmuDetails.tsx'
+
+//import boxData from "../../assets/emuData.json";
 
 function App() {
   const [selectedEmu, setSelectedEmu] = useState<number | null>(null); // Keep track of what emu to open for the Details page
   const [position, setPosition] = useState<number>(0); // Help preserve position after returning to selection screen
 
   const handleEmuClick = (position: number) => {
-    if (boxData.length > position) { // if box does not exist in the emulator data
       setSelectedEmu(position);
-    }
-
   };
 
   return (
@@ -52,13 +51,7 @@ function App() {
           {/* Details page for selected emulator */}
           <Route
             path="/details"
-            element={
-              selectedEmu !== null ? (
-                <DetailsMain emulatorName={boxData[selectedEmu].text} />
-              ) : (
-                <Navigate to="/" replace /> // Redirects to main if no emulator selected
-              )
-            }
+            element={<EmuDetails />}
           />
 
           {/* Flashdrive page */}
@@ -66,6 +59,7 @@ function App() {
             path="/flashdrive"
             element={<Flashdrive />}
           />
+
         </Routes>
       </Router>
     </>

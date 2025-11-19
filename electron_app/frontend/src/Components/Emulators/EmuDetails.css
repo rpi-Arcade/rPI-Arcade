@@ -1,0 +1,73 @@
+/* EmuDetails.css */
+
+.emu-details-page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #222;
+    color: #fff;
+    align-items: center;
+    padding-top: 50px; /* Space for top banner */
+    padding-bottom: 50px; /* Space for bottom info */
+}
+
+.game-list-content {
+    flex-grow: 1;
+    width: 80%;
+    max-width: 900px;
+    margin: 20px auto;
+    overflow: hidden; /* Prevent list from overflowing container */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-list-content h1 {
+    font-size: 3em;
+    color: #ffd700; /* Gold */
+    margin-bottom: 20px;
+}
+
+.status-message {
+    font-size: 1.5em;
+    color: #aaa;
+    margin-top: 50px;
+}
+
+.game-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    max-height: 70vh; /* Limit list height to allow scrolling */
+    overflow-y: scroll;
+    padding: 10px 0;
+}
+
+.game-list li {
+    font-size: 1.8em;
+    padding: 15px 20px;
+    margin: 5px 0;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    border: 2px solid transparent;
+}
+
+/* Highlight the selected game */
+.game-list li.selected {
+    background-color: #3a5a8a; /* Blue background */
+    color: #fff;
+    font-weight: bold;
+    border: 2px solid #ffffff;
+    transform: scale(1.02);
+}
+
+.game-launch-info {
+    position: fixed;
+    bottom: 100px;
+    color: #ccc;
+    font-size: 1.2em;
+    text-align: center;
+}

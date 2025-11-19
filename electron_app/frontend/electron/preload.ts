@@ -25,5 +25,6 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 
 // API for our frontend renderer to communicate with the Electron backend via IPC
 contextBridge.exposeInMainWorld("electronAPI", {
-  startEmulationStation: () => ipcRenderer.send("start-emulationstation"),
+  startEmulationStation: () => ipcRenderer.send("start-emulationstation-full-launch"),
+  closeWindowOnGameLaunch: () => ipcRenderer.send("game-launch-window-manager"),
 });
