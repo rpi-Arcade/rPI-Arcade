@@ -1,73 +1,332 @@
 /* EmuDetails.css */
-
-.emu-details-page {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    background-color: #222;
-    color: #fff;
-    align-items: center;
-    padding-top: 50px; /* Space for top banner */
-    padding-bottom: 50px; /* Space for bottom info */
+.App {
+  text-align: center;
 }
 
-.game-list-content {
-    flex-grow: 1;
-    width: 80%;
-    max-width: 900px;
-    margin: 20px auto;
-    overflow: hidden; /* Prevent list from overflowing container */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.App-logo {
+  pointer-events: none;
 }
 
-.game-list-content h1 {
-    font-size: 3em;
-    color: #ffd700; /* Gold */
-    margin-bottom: 20px;
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
 }
 
-.status-message {
-    font-size: 1.5em;
-    color: #aaa;
-    margin-top: 50px;
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
 
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@font-face {
+  font-family: 'YourFontName';
+  src: url('https://fonts.google.com/specimen/Oswald?preview.text=hello');
+}
+
+/* UPDATED: Main container */
+.Main_Div {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a0000 0%, #000000 50%, #1a0000 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  font-family: 'Courier New', monospace;
+}
+
+/* ADDED: Scanlines effect */
+.scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* ADDED: Decorative pixels */
+.decorative-pixels {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  z-index: 0;
+}
+
+/* ADDED: Main container wrapper */
+.container {
+  max-width: 1400px;
+  width: 95%;
+  margin: 40px auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ADDED: Header section */
+.header {
+  text-align: center;
+  margin-bottom: 60px;
+  position: relative;
+}
+
+/* UPDATED: Back button */
+.back-button {
+  position: absolute;
+  left: 0;
+  top: -20%;
+  transform: translateY(-50%);
+  background: linear-gradient(145deg, #cc0000, #990000);
+  color: white;
+  border: 3px solid #ff3333;
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  box-shadow: 0 4px 15px rgba(204, 0, 0, 0.4);
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: linear-gradient(145deg, #ff0000, #cc0000);
+  box-shadow: 0 6px 20px rgba(255, 51, 51, 0.6);
+  transform: translateY(-50%) translateY(-2px);
+}
+
+/* ADDED: Logo container */
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+/* ADDED: Rotating image wrapper */
+.rotating-image-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 20px rgba(255, 51, 51, 0.5));
+}
+
+/* ADDED: Title section */
+.title-section {
+  text-align: center;
+}
+
+.main-title {
+  font-size: 72px;
+  font-weight: bold;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #ffffff, #cccccc);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 4px 20px rgba(255, 0, 0, 0.5);
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: #ff6666;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+/* ADDED: Content grid */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* ADDED: Recommendations section */
+.recommendations-section {
+  background: linear-gradient(145deg, #1a0000, #0d0000);
+  border: 3px solid #cc0000;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(204, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.recommendations-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #ff3333, transparent);
+}
+
+/* ADDED: Section title */
+.section-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #ff3333;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  border-bottom: 2px solid #cc0000;
+  padding-bottom: 15px;
+}
+
+/* UPDATED: Game list */
 .game-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    max-height: 70vh; /* Limit list height to allow scrolling */
-    overflow-y: scroll;
-    padding: 10px 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 0;
+  margin: 0;
 }
 
-.game-list li {
-    font-size: 1.8em;
-    padding: 15px 20px;
-    margin: 5px 0;
-    border-radius: 8px;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.2s;
-    border: 2px solid transparent;
+.game-item {
+  background: linear-gradient(90deg, rgba(204, 0, 0, 0.2), transparent);
+  padding: 15px 20px;
+  border-left: 4px solid #ff3333;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-/* Highlight the selected game */
-.game-list li.selected {
-    background-color: #3a5a8a; /* Blue background */
-    color: #fff;
-    font-weight: bold;
-    border: 2px solid #ffffff;
-    transform: scale(1.02);
+.game-item.selected {
+    background: linear-gradient(90deg, rgba(255, 51, 51, 0.4), transparent);
+    border-left-width: 8px;
+    padding-left: 24px;
+    filter: brightness(1.2);
 }
 
-.game-launch-info {
-    position: fixed;
-    bottom: 100px;
-    color: #ccc;
-    font-size: 1.2em;
-    text-align: center;
+.game-item:hover {
+  background: linear-gradient(90deg, rgba(255, 51, 51, 0.3), transparent);
+  border-left-width: 8px;
+  padding-left: 24px;
+}
+
+/* ADDED: Info section */
+.info-section {
+  background: linear-gradient(145deg, #0d0000, #1a0000);
+  border: 3px solid #cc0000;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(204, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  height: 60vh;
+}
+
+.info-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #ff3333, transparent);
+}
+
+.info-text {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #cccccc;
+}
+
+.no-data {
+  color: #999999;
+  font-style: italic;
+}
+
+@media (max-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .main-title {
+    font-size: 48px;
+  }
+
+  .back-button {
+    position: relative;
+    transform: none;
+    margin-bottom: 20px;
+  }
+
+  .logo-container {
+    flex-direction: column;
+  }
+
+  .rotating-image-wrapper {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-title {
+    font-size: 36px;
+    letter-spacing: 4px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .section-title {
+    font-size: 24px;
+  }
+
+  .game-item {
+    font-size: 16px;
+  }
+
+  .recommendations-section,
+  .info-section {
+    padding: 25px;
+  }
 }

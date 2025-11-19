@@ -1,6 +1,6 @@
 // EmuDetails.tsx (New Component)
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useController } from "../ControllerContext";
 import { io, Socket } from "socket.io-client";
@@ -10,13 +10,26 @@ import TopBanner from '../Banners/TopBanner.tsx';
 import BotBanner from '../Banners/BotBanner.tsx';
 import moveSound from "../../assets/SE_SYS_SLOT_FRAME.wav";
 
+import emuData from '../../assets/emuData.json';
+import Rotate from "../Details/Rotating_Image"; // Might need to change directories
+
+
 // SocketIO URL must match flask_socket_server.py
 const SOCKET_SERVER_URL = "http://127.0.0.1:5002";
 
 // Type definition for navigation state
 interface EmuDetailsState {
-    emulatorName: string; 
-    emulatorText: string; 
+    emulatorName: string; // (ROM folder name)
+    emulatorText: string; // (Display name)
+}
+
+// Interface to match the structure in emuData.json (for local lookup)
+interface EmulatorData {
+    text: string;
+    description: string;
+    image: string;
+    games: string[];
+    // Add other fields like className if needed by Rotate
 }
 
 const EmuDetails: React.FC = () => {
@@ -32,7 +45,17 @@ const EmuDetails: React.FC = () => {
 
   const socketRef = useRef<Socket | null>(null);
   const moveAudioRef = useRef<HTMLAudioElement | null>(null);
-  const gameListRef = useRef<HTMLUListElement>(null);
+  const gameListRef = useRef<HTMLDivElement>(null);
+
+  // Local Lookup for Static Data (Image & Desc.)
+  const staticEmuData = useMemo(() => {
+    if (emulatorText) {
+        return (emuData as EmulatorData[]).find(
+            (em) => em.text.toLowerCase() === emulatorText.toLowerCase()
+        ) || null;
+    }
+    return null;
+  }, [emulatorText]);
 
   // Initialize Audio
   useEffect(() => {
@@ -83,24 +106,24 @@ const EmuDetails: React.FC = () => {
   }, [emulatorName]);
 
   // --- Scrolling Effect (for usability) ---
-  useEffect(() => {
-    const list = gameListRef.current;
-    if (list) {
-      const selectedItem = list.children[selectedGameIndex] as HTMLLIElement;
-      if (selectedItem) {
-        selectedItem.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'nearest' 
-        });
-      }
-    }
-  }, [selectedGameIndex, games]);
+    useEffect(() => {
+        const listContainer = gameListRef.current?.querySelector('.game-list');
+        if (listContainer) {
+            const selectedItem = listContainer.children[selectedGameIndex] as HTMLLIElement;
+            if (selectedItem) {
+                selectedItem.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'nearest' 
+                });
+            }
+        }
+    }, [selectedGameIndex, games]);
 
   // --- Controller/Key Handlers ---
 
-  const handleBack = () => {
-    navigate(-1); // Go back to the Emulators menu
-  };
+const handleBack = useCallback(() => {
+    navigate('/emulators'); // Navigate specifically to /emulators to ensure correct context
+}, [navigate]);
 
   const handleUpMove = () => {
     if (games.length === 0) return;
@@ -164,44 +187,89 @@ const EmuDetails: React.FC = () => {
 
 
 
-  return (
-    <div className="emu-details-page">
-      <TopBanner />
-      <BotBanner />
-      
-      <div className="game-list-content">
-        <h1>{emulatorText}</h1>
-        
-        {loading ? (
-            <p className="status-message">Loading games...</p>
-        ) : games.length === 0 || games[0].includes("Error") ? (
-            <p className="status-message">{games[0] || `No games found for ${emulatorText}.`}</p>
-        ) : (
-          <ul className="game-list" ref={gameListRef}>
-            {games.map((game, index) => (
-              <li 
-                key={game} 
-                className={index === selectedGameIndex ? "selected" : ""}
-                // Allows direct mouse clicking to select and launch
-                onClick={() => {
-                    setSelectedGameIndex(index);
-                    handleGameLaunch();
-                }}
-              >
-                {/* Remove file extension and format for display */}
-                {game.replace(/\.[^/.]+$/, "")} 
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+// EmuDetails.tsx (MERGED RETURN STATEMENT)
 
-      <div className="game-launch-info">
-          <p>Use **Up/Down** to Select | Press **X** to Launch | Press **B** to Go Back</p>
-      </div>
+    return (
+        // Outer container adopted from DetailsMain.css
+        <div className="Main_Div"> 
+            {/* UI Decorations from DetailsMain */}
+            <div className="scanlines"></div>
+            <div className="decorative-pixels"></div>
 
-    </div>
-  );
+            <div className="container">
+                <div className="header">
+                    {/* Back button linked to handleBack function */}
+                    <button className="back-button" onClick={handleBack}>
+                        ◄ Back
+                    </button>
+                    
+                    <div className="logo-container">
+                        {/* Rotating image in center (Requires 'Rotate' component import) */}
+                        <div className="rotating-image-wrapper">
+                            <Rotate 
+                                // Using the statically looked-up image path
+                                src={staticEmuData?.image ?? "/path/to/fallback-image.webp"} 
+                                width="200px"
+                                height="200px"
+                            />
+                        </div>
+
+                        <div className="title-section">
+                            {/* Use the statically looked-up text for main title */}
+                            <h1 className="main-title">{staticEmuData?.text || emulatorText}</h1> 
+                            <p className="subtitle">Game Selection Menu</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Content Grid: Holds the Game List (Left) and Description (Right) */}
+                <div className="content-grid" ref={gameListRef}> 
+                    
+                    {/* LEFT SIDE: DYNAMIC GAME LIST & CONTROLS */}
+                    <div className="recommendations-section list-container">
+                        <h2 className="section-title">Available Games</h2>
+                        
+                        {loading ? (
+                            <p className="status-message">Fetching Roms from Pi...</p>
+                        ) : games.length === 0 || games[0].includes("Error") ? (
+                            <p className="no-data">{games[0] || `No games found for ${emulatorText}.`}</p>
+                        ) : (
+                            // Dynamic Game List (uses selection and scrolling logic)
+                            <ul className="game-list">
+                                {games.map((game, index) => (
+                                    <li 
+                                        key={game} 
+                                        className={`game-item ${index === selectedGameIndex ? "selected" : ""}`}
+                                        onClick={() => {
+                                            setSelectedGameIndex(index);
+                                            handleGameLaunch();
+                                        }}
+                                    >
+                                        ► {game.replace(/\.[^/.]+$/, "")}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                        
+                        {/* Combined control information footer */}
+                        <div className="controls-footer"> 
+                            <p>Use **Up/Down** to Select | Press **X** to Launch | Press **B** or **ESC** to Go Back</p>
+                        </div>
+                    </div>
+
+                    {/* RIGHT SIDE: EMULATOR DESCRIPTION (Static Content) */}
+                    <div className="info-section">
+                        <h2 className="section-title">Emulator Information</h2>
+                        {staticEmuData ? (
+                            <p className="info-text">{staticEmuData.description}</p>
+                        ) : (
+                            <p className="no-data">Loading metadata...</p>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default EmuDetails;
