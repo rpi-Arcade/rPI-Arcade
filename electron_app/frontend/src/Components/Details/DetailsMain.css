@@ -3,7 +3,6 @@
 }
 
 .App-logo {
-  height: 40vmin;
   pointer-events: none;
 }
 
@@ -40,161 +39,282 @@
 
 @font-face {
   font-family: 'YourFontName';
-  /*a name to be used later*/
   src: url('https://fonts.google.com/specimen/Oswald?preview.text=hello');
-  /*URL to font*/
 }
 
+/* UPDATED: Main container */
 .Main_Div {
   position: relative;
   width: 100vw;
   height: 100vh;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a0000 0%, #000000 50%, #1a0000 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  font-family: 'Courier New', monospace;
 }
 
-.background {
-  position: absolute;
+/* ADDED: Scanlines effect */
+.scanlines {
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* ADDED: Decorative pixels */
+.decorative-pixels {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0.03;
   z-index: 0;
 }
 
-.canvas-container {
-  position: absolute;
-  z-index: 1;
-  left: 10%;
-  top:30%;
-  margin-left:2%;
-
-}
-
-.emulator_summary {
-  position: absolute;
-  right: 13%;
-  top: 10%;
-  width: 27%;
-  color: white;
-  text-align:center;
-  /* font-size: 2vw; */
-  font-size: clamp(20px, 2vw, 40px);
-  z-index: 1;
-  font-family: 'YourFontName';
-  /* width: 30%; */
-  /* text-align: center; */
-
-}
-
-.game_recommendations {
-  padding: 2%;
-  margin: 10px;
-  border: 2px solid white;
-  /* border-radius: 20px; */
-  position: absolute;
-  color: white;
-  font-family: 'YourFontName';
-  right: 10%;
-  bottom: 10%;
-  z-index: 1;
-  text-align: center;
-  width: 30%;
-  height: 30%;
-}
-
-.creator_header {
-  font-size: clamp(20px, 2vw, 35px);
-
-}
-
-.actual_games {
-  font-family: 'YourFontName';
-  font-size: clamp(15px, 1.8vw, 35px);
-  /* font-size:20px; */
-  padding-right: 30px;
-}
-
-.elevated-word {
-  color: white;
+/* ADDED: Main container wrapper */
+.container {
+  max-width: 1400px;
+  width: 95%;
+  margin: 40px auto;
   position: relative;
-  font-size: 15px;
-  /* Set a base font size */
-  text-align: center;
-  /* Center the text */
+  z-index: 1;
 }
 
-.elevated-word::before,
-.elevated-word::after {
-  content: attr(data-text);
-  /* Use the same text */
+/* ADDED: Header section */
+.header {
+  text-align: center;
+  margin-bottom: 60px;
+  position: relative;
+}
+
+/* UPDATED: Back button */
+.back-button {
   position: absolute;
   left: 0;
-  right: 0;
-  transform: translateY(0);
-  /* Default position */
+  top: -20%;
+  transform: translateY(-50%);
+  background: linear-gradient(145deg, #cc0000, #990000);
+  color: white;
+  border: 3px solid #ff3333;
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  box-shadow: 0 4px 15px rgba(204, 0, 0, 0.4);
+  transition: all 0.3s ease;
 }
 
-/* Define the progressive elevation */
-.elevated-word::before {
-  top: 5px;
-  /* First pseudo-element with slight offset */
+.back-button:hover {
+  background: linear-gradient(145deg, #ff0000, #cc0000);
+  box-shadow: 0 6px 20px rgba(255, 51, 51, 0.6);
+  transform: translateY(-50%) translateY(-2px);
 }
 
-.elevated-word::after {
-  top: 10px;
-  /* Second pseudo-element with more offset */
+/* ADDED: Logo container */
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-.Mario{
-  width:clamp(50px, 20vw, 100px);
-  z-index: 1;
-  position:absolute;
-  bottom: 5%; /* Adjust to your desired spacing from the bottom */
-  right: 4%;  /* Adjust to your desired spacing from the right */
-  margin-left:30px;
-
+/* ADDED: Rotating image wrapper */
+.rotating-image-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 20px rgba(255, 51, 51, 0.5));
 }
-/* @keyframes moveToCenter {
-  0% {
-    transform: translateX(0); 
-  }
-  100% {
-    transform: translateX(calc(50vw - 50%)); 
-  }
-} */
 
-
-.Link{
-  width:clamp(100px, 20vw, 250px);
-  z-index: 2;
-  position:absolute;
-  left:10px;
-  bottom:10px;
-  /* animation: moveToCenter 3s ease-in-out forwards; Animation applied */
-  transition: transform 0.2s ease;
-
-
+/* ADDED: Title section */
+.title-section {
+  text-align: center;
 }
-.Side1 {
+
+.main-title {
+  font-size: 72px;
+  font-weight: bold;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #ffffff, #cccccc);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 4px 20px rgba(255, 0, 0, 0.5);
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: #ff6666;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+/* ADDED: Content grid */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* ADDED: Recommendations section */
+.recommendations-section {
+  background: linear-gradient(145deg, #1a0000, #0d0000);
+  border: 3px solid #cc0000;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(204, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.recommendations-section::before {
+  content: '';
   position: absolute;
-  top: 45%;
-  left: -28.0%;
-  width: 62%;
-  height: 10%;
-  max-height: 30%;
-  /* min-height: 25%; */
-  z-index: -5;
-  transform: rotate(270deg); 
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #ff3333, transparent);
 }
 
-.Side2 {
-  position:relative;
-  /* right:90%; */
-  top: 45%;
-  left: 66%;
-  width: 62%;
-  height: 10%;
-  max-height: 30%;
-  /* min-height: 25%; */
-  z-index: -5;
-  transform: rotate(90deg); 
+/* ADDED: Section title */
+.section-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #ff3333;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  border-bottom: 2px solid #cc0000;
+  padding-bottom: 15px;
+}
+
+/* UPDATED: Game list */
+.game-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+.game-item {
+  background: linear-gradient(90deg, rgba(204, 0, 0, 0.2), transparent);
+  padding: 15px 20px;
+  border-left: 4px solid #ff3333;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.game-item:hover {
+  background: linear-gradient(90deg, rgba(255, 51, 51, 0.3), transparent);
+  border-left-width: 8px;
+  padding-left: 24px;
+}
+
+/* ADDED: Info section */
+.info-section {
+  background: linear-gradient(145deg, #0d0000, #1a0000);
+  border: 3px solid #cc0000;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(204, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.info-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #ff3333, transparent);
+}
+
+.info-text {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #cccccc;
+}
+
+.no-data {
+  color: #999999;
+  font-style: italic;
+}
+
+@media (max-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .main-title {
+    font-size: 48px;
+  }
+
+  .back-button {
+    position: relative;
+    transform: none;
+    margin-bottom: 20px;
+  }
+
+  .logo-container {
+    flex-direction: column;
+  }
+
+  .rotating-image-wrapper {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-title {
+    font-size: 36px;
+    letter-spacing: 4px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .section-title {
+    font-size: 24px;
+  }
+
+  .game-item {
+    font-size: 16px;
+  }
+
+  .recommendations-section,
+  .info-section {
+    padding: 25px;
+  }
 }
