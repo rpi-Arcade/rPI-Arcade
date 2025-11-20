@@ -31,11 +31,15 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
-let win: BrowserWindow | null = null; // Define globally
-
 app.disableHardwareAcceleration();
 
+app.commandLine.appendSwitch('no-sandbox');
 app.commandLine.appendSwitch('disable-gpu-sandbox');
+app.commandLine.appendSwitch('disable-software-rasterizer');
+app.commandLine.appendSwitch('enable-native-gpu-memory-buffers', 'false');
+app.commandLine.appendSwitch('disable-features', 'VizDisplayCompositor');
+
+let win: BrowserWindow | null = null; // Define globally
 
 function createWindow() {
   // Get the primary display dimensions
