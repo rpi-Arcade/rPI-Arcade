@@ -31,13 +31,7 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
-app.disableHardwareAcceleration();
-
-app.commandLine.appendSwitch('no-sandbox');
-app.commandLine.appendSwitch('disable-gpu-sandbox');
-app.commandLine.appendSwitch('disable-software-rasterizer');
-app.commandLine.appendSwitch('enable-native-gpu-memory-buffers', 'false');
-app.commandLine.appendSwitch('disable-features', 'VizDisplayCompositor');
+//app.disableHardwareAcceleration();
 
 let win: BrowserWindow | null = null; // Define globally
 
@@ -75,9 +69,75 @@ function createWindow() {
 
 // ======================================================================
 
+app.on('ready', () => {
+    // 1. Explicitly disable hardware acceleration (CRUCIAL LOCATION)
+    app.disableHardwareAcceleration();
+
+    // 2. Aggressive flags for software rendering and driver bypass
+    app.commandLine.appendSwitch('no-sandbox');
+    app.commandLine.appendSwitch('disable-gpu'); 
+    app.commandLine.appendSwitch('disable-gpu-compositing'); 
+    app.commandLine.appendSwitch('disable-software-rasterizer');
+    app.commandLine.appendSwitch('use-cmd-decoder', 'passthrough'); 
+    app.commandLine.appendSwitch('disable-features', 'VizDisplayCompositor');
+    
+    // Call createWindow
+    createWindow();
+
+    // 3. Register IPC Handlers (MOVED HERE FROM app.whenReady)
+
+    // Frontend will call this function via IPC 
+    ipcMain.on("start-emulationstation-full-launch", () => {
+        console.log("Launching EmulationStation...");
+
+        const homeDir = os.homedir();
+        const scriptPath = path.resolve(homeDir, 'rPI-Arcade/electron_app/backend/boot_to_emulation.sh');
+
+        exec(scriptPath, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error launching EmulationStation: ${error.message}`);
+                return;
+            }
+            console.log(`EmulationStation Output: ${stdout}`);
+            if (stderr) console.error(`EmulationStation Errors: ${stderr}`);      
+        });
+
+        setTimeout(() => {
+            if (win) {
+                console.log('Closing the Electron window...');
+                win.close();
+                win = null;
+            }
+
+            console.log('Exiting terminal...');
+
+            const exitPath = path.resolve(homeDir, 'rPI-Arcade/electron_app/backend/exit.sh');
+
+            exec(exitPath, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`Error exiting terminal: ${error.message}`);
+                    return;
+                }
+                console.log(`Output: ${stdout}`);
+                if (stderr) console.error(`Errors: ${stderr}`);      
+            });
+        }, 5000); // 5000 milliseconds = 5 seconds
+    });
+
+    ipcMain.on("game-launch-window-manager", () => {
+        console.log("Game launching. Closing the Electron window...");
+        if (win) {
+            win.close();
+            win = null;
+        }
+    });
+});
+
+
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     console.log('Quitting app...');
@@ -92,7 +152,7 @@ app.on('activate', () => {
     createWindow()
   }
 })
-
+/*
 app.whenReady().then(() => {
   createWindow();
 
@@ -141,12 +201,12 @@ app.whenReady().then(() => {
       
     }, 5000); // 5000 milliseconds = 5 seconds
   });
-
+*/
   ipcMain.on("game-launch-window-manager", () => {
     console.log("Game launching. Closing the Electron window...");
     if (win) {
       win.close();
       win = null;
     }
-  })
-});
+  });
+
