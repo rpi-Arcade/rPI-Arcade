@@ -3,7 +3,7 @@
   and also closes the electron window and terminal after EmulationStation launches.
 */
 
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { screen, ipcMain } from 'electron'; // Import the screen module to access display properties
@@ -32,6 +32,10 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
 let win: BrowserWindow | null = null; // Define globally
+
+app.disableHardwareAcceleration();
+
+app.commandLine.appendSwitch('disable-gpu-sandbox');
 
 function createWindow() {
   // Get the primary display dimensions
