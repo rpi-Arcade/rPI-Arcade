@@ -31,7 +31,16 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
-//app.disableHardwareAcceleration();
+app.disableHardwareAcceleration();
+
+// We keep the aggressive flags here to execute them early
+app.commandLine.appendSwitch('no-sandbox');
+app.commandLine.appendSwitch('disable-gpu'); 
+app.commandLine.appendSwitch('disable-gpu-compositing'); 
+app.commandLine.appendSwitch('disable-software-rasterizer');
+app.commandLine.appendSwitch('ozone-platform', 'drm'); 
+app.commandLine.appendSwitch('use-cmd-decoder', 'passthrough'); 
+app.commandLine.appendSwitch('disable-features', 'VizDisplayCompositor');
 
 let win: BrowserWindow | null = null; // Define globally
 
