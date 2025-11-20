@@ -87,10 +87,15 @@ const EmuDetails: React.FC = () => {
     });
 
     socket.on("games_list_response", (data) => {
+
+      console.log("DEBUG: Games list received:", data);
+
       setLoading(false);
       if (data.emulator === emulatorName && Array.isArray(data.games)) {
         setGames(data.games);
         setSelectedGameIndex(0); // Reset selection after loading new list
+      } else {
+        console.error("DEBUG: Games list received, but structure is wrong or empty:", data);
       }
     });
 
