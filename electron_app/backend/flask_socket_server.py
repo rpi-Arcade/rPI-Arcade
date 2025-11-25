@@ -89,28 +89,32 @@ def launch_game_handler(data):
     # We must run it as the 'rpiarcade' user to get the correct permissions/environment.
     # ----------------------------------------------------------------------------------
 
-    launch_command = [
-        'sudo', '-u', RPIARCADE_USER, 'bash', '-c',
-        f'source /home/{RPIARCADE_USER}/.profile; /opt/retropie/supplementary/runcommand/runcommand.sh 0 "{emulator_name}" "{game_path}" ""'
-    ]
+    cmd_string = (
+        f'sudo -u {RPIARCADE_USER} '
+        f'/opt/retropie/supplementary/runcommand/runcommand.sh 0 "{emulator_name}" "{game_path}" ""'
+    )
+
+    # openvt arguments: -c 1 (use TTY1), -s (switch to it), -f (force), -w (wait for completion)
+    full_command = ['sudo', 'openvt', '-c', '1', '-s', '-f', '--', 'bash', '-c', cmd_string]
+
+    print(f"Executing: {' '.join(full_command)}")
 
     try:
-        # Launch the game in the background using subprocess.Popen
-        # Note: We detach it so the frontend can continue to run or shut down cleanly.
-        subprocess.Popen(launch_command, 
-                         preexec_fn=os.setpgrp, # Detach from terminal
-                         stdout=subprocess.DEVNULL, 
-                         stderr=subprocess.DEVNULL)
+        # Open a log file to capture errors
+        with open("/tmp/rpiarcade_launch_log.txt", "w") as log_file:
+            subprocess.Popen(
+                full_command,
+                stdout=log_file,
+                stderr=log_file,
+                preexec_fn=os.setpgrp # Detach process
+            )
         
-        print(f"Attempted to launch game: {emulator_name}/{game_file}")
-        
-        # Send confirmation back to the sender
         emit("launch_game_response", {"status": "success", "game": game_file})
 
     except Exception as e:
         print(f"Launch command failed: {e}")
         emit("launch_game_response", {"status": "error", "error": str(e)})
-
+        
 if __name__ == "__main__":
     print("Starting Flask-SocketIO server...")
     print(f"Looking for ROMs in: {ROMS_BASE_PATH}")
