@@ -14,6 +14,13 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 # Check if Pi specific path exists
 PI_ROM_PATH = '/home/rpiarcade/RetroPie/roms'
 
+EMULATOR_CORES = {
+    'snes': '/opt/retropie/libretrocores/lr-snes9x/snes9x_libretro.so',
+    'nes': '/opt/retropie/libretrocores/lr-fceumm/fceumm_libretro.so',  # Example
+    'n64': '/opt/retropie/libretrocores/lr-mupen64plus/mupen64plus_libretro.so', # Example
+    # Add other consoles here as you install them
+}
+
 if os.path.exists(PI_ROM_PATH):
     print("--- PRODUCTION MODE DETECTED (Raspberry Pi) ---")
     IS_RASPBERRY_PI = True
@@ -89,25 +96,33 @@ def launch_game_handler(data):
     # We must run it as the 'rpiarcade' user to get the correct permissions/environment.
     # ----------------------------------------------------------------------------------
 
+    core_path = EMULATOR_CORES.get(emulator_name)
+
+    if not core_path:
+        error_msg = f"Error: No core configured in Python for '{emulator_name}'"
+        print(error_msg)
+        emit("launch_game_response", {"status": "error", "error": error_msg})
+        return
+
+    retroarch_bin = "/opt/retropie/emulators/retroarch/bin/retroarch"
+    config_file = f"/opt/retropie/configs/{emulator_name}/retroarch.cfg"
+    
     cmd_string = (
         f'sudo -u {RPIARCADE_USER} '
-        f'/opt/retropie/supplementary/runcommand/runcommand.sh 0 "{emulator_name}" "{game_path}" ""'
+        f'{retroarch_bin} -L {core_path} --config {config_file} "{game_path}"'
     )
 
-    # openvt arguments: -c 1 (use TTY1), -s (switch to it), -f (force), -w (wait for completion)
     full_command = ['sudo', 'openvt', '-c', '1', '-s', '-f', '--', 'bash', '-c', cmd_string]
-
-    print(f"Executing: {' '.join(full_command)}")
+    
+    print(f"Executing Direct Launch: {' '.join(full_command)}")
 
     try:
-        # Open a log file to capture errors
-        with open("/tmp/rpiarcade_launch_log.txt", "w") as log_file:
-            subprocess.Popen(
-                full_command,
-                stdout=log_file,
-                stderr=log_file,
-                preexec_fn=os.setpgrp # Detach process
-            )
+        subprocess.Popen(
+            full_command,
+            stdout=None,
+            stderr=None,
+            preexec_fn=os.setpgrp
+        )
         
         emit("launch_game_response", {"status": "success", "game": game_file})
 
