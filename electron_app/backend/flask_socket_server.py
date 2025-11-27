@@ -149,10 +149,7 @@ def launch_game_handler(data):
     
     # We call our new wrapper script using sudo -u rpiarcade
     # openvt -w waits for the game to finish before releasing the screen
-    full_command = [
-        'sudo', 'openvt', '-c', '1', '-s', '-f', '-w', '--', 
-        'sudo', '-u', 'rpiarcade', '/home/rpiarcade/debug_launcher.sh', game_path
-    ]
+    full_command = ['sudo', '-u', 'rpiarcade', '/home/rpiarcade/debug_launcher.sh', game_path]
     
     print(f"Calling Wrapper: {' '.join(full_command)}")
 
