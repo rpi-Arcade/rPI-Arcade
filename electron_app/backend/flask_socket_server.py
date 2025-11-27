@@ -117,13 +117,14 @@ def launch_game_handler(data):
     print(f"Executing Direct Launch: {' '.join(full_command)}")
 
     try:
-        subprocess.Popen(
-            full_command,
-            stdout=None,
-            stderr=None,
-            preexec_fn=os.setpgrp
-        )
-        
+        with open("/home/rpiarcade/launch_error.log", "w") as log:
+            subprocess.Popen(
+                full_command,
+                stdout=log,
+                stderr=log,
+                preexec_fn=os.setpgrp
+            )
+            
         emit("launch_game_response", {"status": "success", "game": game_file})
 
     except Exception as e:
