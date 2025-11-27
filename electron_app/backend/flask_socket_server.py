@@ -70,7 +70,7 @@ def get_games_list_handler(data):
 
     print(f"Games found for {emulator_name}: {len(games_list)}")
     emit("games_list_response", {"emulator": emulator_name, "games": games_list})
-
+'''
 @socketio.on("launch_game")
 def launch_game_handler(data):
     # Expects {'emulator': 'nes', 'game_file': 'Mario.nes'}
@@ -130,7 +130,64 @@ def launch_game_handler(data):
     except Exception as e:
         print(f"Launch command failed: {e}")
         emit("launch_game_response", {"status": "error", "error": str(e)})
+''' 
+@socketio.on("launch_game")
+def launch_game_handler(data):
+    emulator_name = data.get('emulator')
+    game_file = data.get('game_file')
+
+    if not emulator_name or not game_file:
+        print("Error: Missing emulator or game_file.")
+        return
+
+    # --- DEV MODE ---
+    if not IS_RASPBERRY_PI:
+        print(f" [DEV] SIMULATING LAUNCH: {emulator_name} -> {game_file}")
+        emit("launch_game_response", {"status": "success", "game": game_file})
+        return  
+
+    # --- PROD MODE ---
+    game_path = os.path.join(ROMS_BASE_PATH, emulator_name, game_file)
+    core_path = EMULATOR_CORES.get(emulator_name)
+
+    if not core_path:
+        error_msg = f"Error: No core configured for '{emulator_name}'"
+        print(error_msg)
+        emit("launch_game_response", {"status": "error", "error": error_msg})
+        return
+
+    retroarch_bin = "/opt/retropie/emulators/retroarch/bin/retroarch"
+    config_file = f"/opt/retropie/configs/{emulator_name}/retroarch.cfg"
+    
+    # --- CHANGED: WE ADD LOGGING HERE NOW ---
+    # This > part tells Linux: "Take whatever RetroArch screams and put it in this file"
+    cmd_string = (
+        f'sudo -u {RPIARCADE_USER} '
+        f'{retroarch_bin} -L {core_path} --config {config_file} "{game_path}" '
+        f'> /home/rpiarcade/launch_error.log 2>&1'
+    )
+
+    # We add '-w' (wait) so openvt doesn't close until the game is actually done
+    full_command = ['sudo', 'openvt', '-c', '1', '-s', '-f', '-w', '--', 'bash', '-c', cmd_string]
+    
+    print(f"Executing Direct Launch: {' '.join(full_command)}")
+
+    try:
+        # We don't need to capture stdout here anymore, the cmd_string handles it
+        subprocess.Popen(
+            full_command,
+            stdout=None, 
+            stderr=None,
+            preexec_fn=os.setpgrp
+        )
         
+        emit("launch_game_response", {"status": "success", "game": game_file})
+
+    except Exception as e:
+        print(f"Launch command failed: {e}")
+        emit("launch_game_response", {"status": "error", "error": str(e)})
+
+
 if __name__ == "__main__":
     print("Starting Flask-SocketIO server...")
     print(f"Looking for ROMs in: {ROMS_BASE_PATH}")
