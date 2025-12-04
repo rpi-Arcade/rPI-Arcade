@@ -142,8 +142,8 @@ const handleBack = useCallback(() => {
     setSelectedGameIndex((prev) => (prev < games.length - 1 ? prev + 1 : 0));
   };
 
-  const handleGameLaunch = () => {
-    const gameFile = games[selectedGameIndex];
+  const handleGameLaunch = (gameOverride?: string) => {
+    const gameFile = gameOverride || games[selectedGameIndex];
     const socket = socketRef.current;
     
     if (!gameFile || !emulatorName || !socket || !socket.connected) {
@@ -247,7 +247,7 @@ const handleBack = useCallback(() => {
                                         className={`game-item ${index === selectedGameIndex ? "selected" : ""}`}
                                         onClick={() => {
                                             setSelectedGameIndex(index);
-                                            handleGameLaunch();
+                                            handleGameLaunch(game);
                                         }}
                                     >
                                         ► {game.replace(/\.[^/.]+$/, "")}
