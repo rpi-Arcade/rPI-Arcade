@@ -173,6 +173,7 @@ const handleBack = useCallback(() => {
     registerHandler("down", handleDownMove);
     registerButtonHandler("B", handleBack);      // B button to go back
     registerButtonHandler("X", handleGameLaunch); // X button to launch game
+    registerButtonHandler("A", handleGameLaunch); // X button to launch game
 
     const handleEscapeKey = (e: KeyboardEvent) => {
         if (e.key === "Escape") {
@@ -190,6 +191,7 @@ const handleBack = useCallback(() => {
         registerHandler("up", () => {});
         registerHandler("down", () => {});
         registerButtonHandler("X", () => {});
+        registerButtonHandler("A", () => {});
         registerButtonHandler("B", () => {});
 
         window.removeEventListener("keydown", handleEscapeKey);

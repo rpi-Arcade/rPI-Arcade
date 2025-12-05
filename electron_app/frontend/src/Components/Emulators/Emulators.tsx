@@ -182,17 +182,21 @@ const Emulators: React.FC<EmulatorsProps> = ({
     moveAudioRef.current.volume = 0.5;
 
     registerButtonHandler("X", () => { console.log("X press ignored.") });
+    registerButtonHandler("A", () => { console.log("A press ignored.") });
 
     if (position >= 0 && position < totalEmulatorCount) {
         registerButtonHandler("X", handleEmulatorSelection);
+        registerButtonHandler("A", handleEmulatorSelection);
     } 
     // 2. The USB box is at totalEmulatorCount
     else if (position === addGamesIndex) {
         registerButtonHandler("X", handleFlashdriveSelection);
+        registerButtonHandler("A", handleFlashdriveSelection);
     } 
     // 3. The LAUNCH box is at the very end
     else if (position === playGamesIndex) {
         registerButtonHandler("X", handlePlaySelection);
+        registerButtonHandler("A", handlePlaySelection);
     }
 
     return () => {
@@ -200,6 +204,7 @@ const Emulators: React.FC<EmulatorsProps> = ({
       registerHandler("right", () => {});
       registerButtonHandler("B", () => {});
       registerButtonHandler("X", () => {});
+      registerButtonHandler("A", () => {});
     };
   }, [position, registerHandler, registerButtonHandler, addGamesIndex, playGamesIndex, totalEmulatorCount]);
 
