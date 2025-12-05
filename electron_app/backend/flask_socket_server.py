@@ -16,9 +16,12 @@ PI_ROM_PATH = '/home/rpiarcade/RetroPie/roms'
 
 EMULATOR_CORES = {
     'snes': '/opt/retropie/libretrocores/lr-snes9x/snes9x_libretro.so',
-    'nes': '/opt/retropie/libretrocores/lr-fceumm/fceumm_libretro.so',  # Example
-    'n64': '/opt/retropie/libretrocores/lr-mupen64plus/mupen64plus_libretro.so', # Example
-    # Add other consoles here as you install them
+    'nes': '/opt/retropie/libretrocores/lr-mesen/mesen_libretro.so',
+    'n64': '/opt/retropie/libretrocores/lr-mupen64plus-next/mupen64plus_next_libretro.so',
+    'nds': '/opt/retropie/libretrocores/lr-desmume/desmume_libretro.so',
+    'psx': '/opt/retropie/libretrocores/lr-pcsx-rearmed/pcsx_rearmed_libretro.so',
+    'psp': '/opt/retropie/libretrocores/lr-ppsspp/ppsspp_libretro.so',
+    'genesis': '/opt/retropie/libretrocores/lr-genesis-plus-gx/genesis_plus_gx_libretro.so' 
 }
 
 if os.path.exists(PI_ROM_PATH):
@@ -86,10 +89,19 @@ def launch_game_handler(data):
 
     # --- PROD MODE ---
     game_path = os.path.join(ROMS_BASE_PATH, emulator_name, game_file)
+    core_path = EMULATOR_CORES.get(emulator_name)
+
+    if not core_path:
+        error_msg = f"Error: Core not defined for '{emulator_name}' in Python."
+        print(error_msg)
+        emit("launch_game_response", {"status": "error", "error": error_msg})
+        return
     
+    config_path = f"/opt/retropie/configs/{emulator_name}/retroarch.cfg"
+
     # We call our new wrapper script using sudo -u rpiarcade
     # openvt -w waits for the game to finish before releasing the screen
-    full_command = ['sudo', '-u', 'rpiarcade', '/home/rpiarcade/debug_launcher.sh', game_path]
+    full_command = ['sudo', '-u', 'rpiarcade', '/home/rpiarcade/debug_launcher.sh', core_path, config_path, game_path]
     
     print(f"Calling Wrapper: {' '.join(full_command)}")
 
