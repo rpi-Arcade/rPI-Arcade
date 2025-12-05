@@ -70,67 +70,7 @@ def get_games_list_handler(data):
 
     print(f"Games found for {emulator_name}: {len(games_list)}")
     emit("games_list_response", {"emulator": emulator_name, "games": games_list})
-'''
-@socketio.on("launch_game")
-def launch_game_handler(data):
-    # Expects {'emulator': 'nes', 'game_file': 'Mario.nes'}
-    emulator_name = data.get('emulator')
-    game_file = data.get('game_file')
 
-    if not emulator_name or not game_file:
-        print("Error: Missing emulator or game_file in request.")
-        return
-
-    if not IS_RASPBERRY_PI:
-        print(f" [DEV] SIMULATING LAUNCH: {emulator_name} -> {game_file}")
-        print(" [DEV] Backend logic successful. Sending success response to frontend.")
-        emit("launch_game_response", {"status": "success", "game": game_file})
-        return  
-
-    # Construct the full path to game file
-    game_path = os.path.join(ROMS_BASE_PATH, emulator_name, game_file)
-    # ----------------------------------------------------------------------------------
-    # IMPORTANT: The launch command. 
-    # EmulationStation uses a script (usually runcommand.sh) to launch games via RetroArch.
-    # The command below is a standard way to launch a RetroPie game directly from a script.
-    # We must run it as the 'rpiarcade' user to get the correct permissions/environment.
-    # ----------------------------------------------------------------------------------
-
-    core_path = EMULATOR_CORES.get(emulator_name)
-
-    if not core_path:
-        error_msg = f"Error: No core configured in Python for '{emulator_name}'"
-        print(error_msg)
-        emit("launch_game_response", {"status": "error", "error": error_msg})
-        return
-
-    retroarch_bin = "/opt/retropie/emulators/retroarch/bin/retroarch"
-    config_file = f"/opt/retropie/configs/{emulator_name}/retroarch.cfg"
-    
-    cmd_string = (
-        f'sudo -u {RPIARCADE_USER} '
-        f'{retroarch_bin} -L {core_path} --config {config_file} "{game_path}"'
-    )
-
-    full_command = ['sudo', 'openvt', '-c', '1', '-s', '-f', '--', 'bash', '-c', cmd_string]
-    
-    print(f"Executing Direct Launch: {' '.join(full_command)}")
-
-    try:
-        with open("/home/rpiarcade/launch_error.log", "w") as log:
-            subprocess.Popen(
-                full_command,
-                stdout=log,
-                stderr=log,
-                preexec_fn=os.setpgrp
-            )
-            
-        emit("launch_game_response", {"status": "success", "game": game_file})
-
-    except Exception as e:
-        print(f"Launch command failed: {e}")
-        emit("launch_game_response", {"status": "error", "error": str(e)})
-''' 
 @socketio.on("launch_game")
 def launch_game_handler(data):
     emulator_name = data.get('emulator')
