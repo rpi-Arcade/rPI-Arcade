@@ -110,11 +110,20 @@ const Emulators: React.FC<EmulatorsProps> = ({
       navigate("/");
   }, [navigate]); // navigate is stable, so this function is stable
 
+  const playMoveSound = () => {
+    if (moveAudioRef.current) {
+      moveAudioRef.current.currentTime = 0;
+      moveAudioRef.current.play().catch(() => {});
+    }
+  };
+
   const handleRightMove = () => {
+    playMoveSound();
     setPosition((prev) => (prev < totalBoxes - 1 ? prev + 1 : 0));
   };
 
   const handleLeftMove = () => {
+    playMoveSound();
     setPosition((prev) => (prev > 0 ? prev - 1 : totalBoxes - 1));
   };
 
@@ -149,12 +158,6 @@ const Emulators: React.FC<EmulatorsProps> = ({
     }
   };
 
-  const playMoveSound = () => {
-    if (moveAudioRef.current) {
-      moveAudioRef.current.currentTime = 0;
-      moveAudioRef.current.play().catch(() => {});
-    }
-  };
 
   // Stop app and open EmulationStation; sends command to Electron backend via IPC
   const handlePlaySelection = () => {
@@ -165,8 +168,14 @@ const Emulators: React.FC<EmulatorsProps> = ({
 
   // Register controller handlers for this page
   useEffect(() => {
-    //registerHandler("left", handleLeftMove);
-    //registerHandler("right", handleRightMove);
+    registerHandler("left", handleLeftMove);
+    registerHandler("right", handleRightMove);
+
+    // Note for future reference: Since this is a horizontal menu, we usually don't need Up/Down 
+    // for navigation, but if you want them to do something, register them here.
+    // registerHandler("up", () => console.log("Up pressed")); 
+    // registerHandler("down", () => console.log("Down pressed"));
+
     registerButtonHandler("B", handleLogoClick);
 
     moveAudioRef.current = new Audio(moveSound);
@@ -187,14 +196,14 @@ const Emulators: React.FC<EmulatorsProps> = ({
     }
 
     return () => {
-      //registerHandler("left", () => {});
-      //registerHandler("right", () => {});
+      registerHandler("left", () => {});
+      registerHandler("right", () => {});
       registerButtonHandler("B", () => {});
       registerButtonHandler("X", () => {});
     };
   }, [position, registerHandler, registerButtonHandler, addGamesIndex, playGamesIndex, totalEmulatorCount]);
 
-  // Arrow Key Function 
+// Arrow Key Function 
 
 useEffect(() => {
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -222,11 +231,9 @@ useEffect(() => {
     if (e.key === "ArrowLeft") {
       lastKeyPress.current = now;
       handleLeftMove();
-      playMoveSound();
     } else if (e.key === "ArrowRight") {
       lastKeyPress.current = now;
       handleRightMove();
-      playMoveSound();
     } 
   };
 

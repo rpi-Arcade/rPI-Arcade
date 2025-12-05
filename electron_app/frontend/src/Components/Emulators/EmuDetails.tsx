@@ -142,8 +142,12 @@ const handleBack = useCallback(() => {
     setSelectedGameIndex((prev) => (prev < games.length - 1 ? prev + 1 : 0));
   };
 
-  const handleGameLaunch = (gameOverride?: string) => {
-    const gameFile = gameOverride || games[selectedGameIndex];
+  const handleGameLaunch = (gameOverride?: string | unknown) => {
+
+    const gameFile = (typeof gameOverride === 'string') 
+        ? gameOverride 
+        : games[selectedGameIndex];
+    
     const socket = socketRef.current;
     
     if (!gameFile || !emulatorName || !socket || !socket.connected) {
@@ -174,6 +178,9 @@ const handleBack = useCallback(() => {
         if (e.key === "Escape") {
             handleBack(); // Use the existing function that calls navigate(-1)
         }
+        if (e.key === "ArrowUp") handleUpMove();
+        if (e.key === "ArrowDown") handleDownMove();
+        if (e.key === "Enter") handleGameLaunch();
     };
 
     window.addEventListener("keydown", handleEscapeKey);
