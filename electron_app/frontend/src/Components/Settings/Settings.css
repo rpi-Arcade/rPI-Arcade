@@ -52,7 +52,7 @@ select:focus, button:focus {
   gap: 16px;
 }
 .settings-subsection .back-button {
-  margin-top: 50px;
+  margin-top: 5px;
   background-color: #444;
   color: white;
   border: none;
@@ -64,7 +64,7 @@ select:focus, button:focus {
   position: relative; 
 }
 
-.back-button:hover {
+.settings-subsection .back-button:hover {
   background-color: #666;
 }
 

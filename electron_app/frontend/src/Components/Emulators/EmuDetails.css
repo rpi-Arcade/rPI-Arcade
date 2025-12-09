@@ -105,11 +105,11 @@
 }
 
 /* UPDATED: Back button */
-.back-button {
+.emu-back-button {
   position: absolute;
-  left: 0;
-  top: -20%;
-  transform: translateY(-50%);
+  left: 20px;
+  top: 20px;
+  /* transform: translateY(-50%); */
   background: linear-gradient(145deg, #cc0000, #990000);
   color: white;
   border: 3px solid #ff3333;
@@ -124,10 +124,10 @@
   transition: all 0.3s ease;
 }
 
-.back-button:hover {
+.emu-back-button:hover {
   background: linear-gradient(145deg, #ff0000, #cc0000);
   box-shadow: 0 6px 20px rgba(255, 51, 51, 0.6);
-  transform: translateY(-50%) translateY(-2px);
+  transform: translateY(-10%) translateY(-2px);
 }
 
 /* ADDED: Logo container */
@@ -292,7 +292,7 @@
     font-size: 48px;
   }
 
-  .back-button {
+  .emu-back-button {
     position: relative;
     transform: none;
     margin-bottom: 20px;
