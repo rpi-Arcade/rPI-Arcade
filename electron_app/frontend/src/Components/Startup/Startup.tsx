@@ -11,7 +11,7 @@ const gifs = [
   '/images/EB1.gif',
   '/images/EB2.gif',
   '/images/EB3.gif',
-  // '../assets/EB4.gif',
+  '../assets/EB4.gif',
 ];
 
 const Startup = () => {
@@ -30,6 +30,8 @@ useEffect(() => { //use random gif for background, unless theme is set
     setRandomGif("/images/EB2.gif");
   } else if (savedTheme === "diamonds") {
     setRandomGif("/images/EB3.gif");
+  } else if (savedTheme === "waves"){
+    setRandomGif("/images/EB4.gif");
   } else {
     const randomIndex = Math.floor(Math.random() * gifs.length);
     setRandomGif(gifs[randomIndex]);

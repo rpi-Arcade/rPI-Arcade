@@ -93,6 +93,7 @@ const Settings: React.FC = () => {
           <option value="circles">Circles</option>
           <option value="squares">Squares</option>
           <option value="diamonds">Diamonds</option>
+          <option value="waves">Waves</option>
         </select>
       </div>
       <button className="back-button" onClick={() => setActiveSection(null)}>
