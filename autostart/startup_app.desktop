@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=custom_startup
+Exec=/home/rpiarcade/startup.sh
+Comment=Runs backend on startup
