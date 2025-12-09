@@ -213,7 +213,7 @@ const handleBack = useCallback(() => {
             <div className="container">
                 <div className="header">
                     {/* Back button linked to handleBack function */}
-                    <button className="back-button" onClick={handleBack}>
+                    <button className="emu-back-button" onClick={handleBack}>
                         ◄ Back
                     </button>
                     

@@ -15,11 +15,6 @@
   flex-direction: column;
   gap: 20px;
 }
-.setting {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
 
 .setting-pair {
   display: flex;
@@ -56,9 +51,8 @@ select:focus, button:focus {
   margin-top: 20px;
   gap: 16px;
 }
-
-.back-button {
-  margin-top: 30px;
+.settings-subsection .back-button {
+  margin-top: 5px;
   background-color: #444;
   color: white;
   border: none;
@@ -67,9 +61,10 @@ select:focus, button:focus {
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.3s ease;
+  position: relative; 
 }
 
-.back-button:hover {
+.settings-subsection .back-button:hover {
   background-color: #666;
 }
 
@@ -124,7 +119,3 @@ select:focus, button:focus {
   transform: translateX(24px);
 }
 
-.top-banner, .bot-banner {
-  pointer-events: none; 
-  z-index: 10;
-}
