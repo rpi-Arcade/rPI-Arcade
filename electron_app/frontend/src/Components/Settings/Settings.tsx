@@ -1,26 +1,32 @@
 import React, { useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import "./Settings.css";
+import TopBanner from '../Banners/TopBanner.tsx';
+import BotBanner from '../Banners/BotBanner.tsx';
+import logo from "/images/Logo.png";
 import { useController } from "../ControllerContext";
 
 const Settings: React.FC = () => {
   const navigate = useNavigate();
   const { registerHandler, registerButtonHandler } = useController();
 
-  const [activeSection, setActiveSection] = useState<null | "audio" | "video" | "controller">(null);
+  const [activeSection, setActiveSection] = useState<null | "audio">(null);
   const [audioOn, setAudioOn] = useState(true);
   const [volume, setVolume] = useState(0.5);
+    const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "random");
   const audioRef = React.useRef<HTMLAudioElement>(null); 
-  const [videoQuality, setVideoQuality] = useState("high");
-  const [controllerScheme, setControllerScheme] = useState("classic");
   const [activeIndex, setActiveIndex] = useState(0);
-  const menuOptions: (null | "audio" | "video" | "controller" | "reset")[] = [
-    "audio", "video", "controller", "reset"];
+  const menuOptions: (null | "audio" | "theme" | "reset")[] = ["audio", "theme", "reset"];
 
   const handleReset = () => {
     setAudioOn(true);
-    setVideoQuality("high");
-    setControllerScheme("classic");
+    setVolume(0.5);    
+    setTheme("random");
+    localStorage.setItem("theme", "random");
+  };
+
+  const handleLogoClick = () => {
+    navigate("/emulators");
   };
 
   const renderMainMenu = () => (
@@ -35,8 +41,7 @@ const Settings: React.FC = () => {
           }}
         >
           {option === "audio" && "Audio Settings"}
-          {option === "video" && "Video Settings"}
-          {option === "controller" && "Controller Mapping"}
+          {option === "theme" && "Theme Settings"}
           {option === "reset" && "Reset to Defaults"}
         </button>
       ))}
@@ -47,9 +52,16 @@ const Settings: React.FC = () => {
     <div className="settings-subsection">
       <div className="setting-pair">
         <p className="setting-label">Toggle audio output:</p>
-        <button onClick={() => setAudioOn(prev => !prev)}>
-          {audioOn ? "Turn Audio Off 🔇" : "Turn Audio On 🔊"}
-        </button>
+        <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+          <label className="toggle-switch" aria-label="Toggle audio">
+            <input
+              type="checkbox"
+              checked={audioOn}
+              onChange={(e) => setAudioOn(e.target.checked)}
+            />
+            <span className="switch-slider" />
+          </label>
+        </div>
       </div>
       <div className="setting-pair">
         <p className="setting-label">Volume:</p>
@@ -66,31 +78,26 @@ const Settings: React.FC = () => {
     </div>
   );
 
-  const renderVideoSettings = () => (
+  const renderThemeSettings = () => (
     <div className="settings-subsection">
       <div className="setting-pair">
-        <p className="setting-label">Choose video quality:</p>
-        <select value={videoQuality} onChange={(e) => setVideoQuality(e.target.value)}>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
+        <p className="setting-label">Choose Theme:</p>
+        <select
+          value={theme}
+          onChange={(e) => {
+            setTheme(e.target.value);
+            localStorage.setItem("theme", e.target.value);
+          }}
+        >
+          <option value="random">Random</option>
+          <option value="circles">Circles</option>
+          <option value="squares">Squares</option>
+          <option value="diamonds">Diamonds</option>
         </select>
       </div>
-      <button className="back-button" onClick={() => setActiveSection(null)}>← Back</button>
-    </div>
-  );
-
-  const renderControllerSettings = () => (
-    <div className="settings-subsection">
-      <div className="setting-pair">
-        <p className="setting-label">Select control scheme:</p>
-        <select value={controllerScheme} onChange={(e) => setControllerScheme(e.target.value)}>
-          <option value="classic">Classic</option>
-          <option value="modern">Modern</option>
-          <option value="custom">Custom</option>
-        </select>
-      </div>
-      <button className="back-button" onClick={() => setActiveSection(null)}>← Back</button>
+      <button className="back-button" onClick={() => setActiveSection(null)}>
+        ← Back
+      </button>
     </div>
   );
 
@@ -115,31 +122,23 @@ const Settings: React.FC = () => {
       else setActiveSection(selected as typeof activeSection);
     });
   
-    registerButtonHandler("B", () => {
-      if (activeSection === null) navigate("/emulators");
-      else setActiveSection(null);
-    });
+     registerButtonHandler("B", handleLogoClick);
   }, [activeIndex, activeSection]);
 
   return (
     <div className="settings-page">
-      <h1>
-        {activeSection === "audio"
-          ? "Audio Settings"
-          : activeSection === "video"
-          ? "Video Settings"
-          : activeSection === "controller"
-          ? "Controller Mapping"
-          : "Settings"}
-      </h1>
+      <TopBanner />
+      <BotBanner />
+      <h1>{activeSection === "audio" ? "Audio Settings" : "Settings"}</h1>
       {activeSection === null && (
-        <button onClick={() => navigate("/emulators")}>Back to Emulators</button>
+        <button onClick={handleLogoClick}>Back to Emulators</button>
       )}
 
       {activeSection === null && renderMainMenu()}
       {activeSection === "audio" && renderAudioSettings()}
-      {activeSection === "video" && renderVideoSettings()}
-      {activeSection === "controller" && renderControllerSettings()}
+      {activeSection === "theme" && renderThemeSettings()}
+      {/* This logo is invisible & just for testing purposes; on click, returns to emulators screen. */}
+      <img src={logo} alt="logo" className="logo" style={{ opacity: 0, zIndex: "99" }} onClick={handleLogoClick} />
     </div>
   );
 };

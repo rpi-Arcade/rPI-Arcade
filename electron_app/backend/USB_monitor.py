@@ -71,6 +71,17 @@ def start_usb_monitoring():
     # socketio.emit('status', {'message': 'alksjdlkasjdl'})
     # socketio.emit('status', {'message': 'Please remove USB'})
 
+@socketio.on("LIST_GAMES")
+def handle_list_games():
+    mount_point = "/mnt/usb/RetroPie"  # same as copy source
+
+    if not os.path.exists(mount_point):
+        socketio.emit("games_list", {"error": "USB not mounted"})
+        return
+
+    games = list_games_on_usb(mount_point)
+    socketio.emit("games_list", {"games": games})
+
 @socketio.on('STOP')
 def stop_usb_monitoring():
     global observer
@@ -256,6 +267,21 @@ def device_event(device):
         observer.stop()
         print("USB removed, stopping script")
         
+def list_games_on_usb(usb_base_path):
+    game_list = {}
+
+    for system in game_systems:
+        usb_path = os.path.join(usb_base_path, system)
+        if os.path.exists(usb_path):
+            files = os.listdir(usb_path)
+            #Clean names (remove extensions, remove parentheses info)
+            cleaned = [
+                f.split('(')[0].rsplit('.', 1)[0].strip()
+                for f in files
+            ]
+            game_list[system] = cleaned
+
+    return game_list
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)

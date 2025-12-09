@@ -15,7 +15,7 @@ const BotBanner = () => {
         duration: 0.5,
         ease: "backOut",
       }}
-      style={{position: "absolute", width:"100%", height:"100%"}}
+      style={{position: "absolute", width:"100%", height:"100%", pointerEvents: "none", zIndex: 10,}}
     >
       <img src={pixelPanel} alt="pixel panel" className="pixelPanelBot" />
       {/* <TextAlongPathBot className="stringDecorBot" /> */}
