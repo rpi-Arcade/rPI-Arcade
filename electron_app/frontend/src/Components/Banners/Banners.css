@@ -30,7 +30,7 @@
   z-index: 100;
 } */
 
-.pixelPanelTop {
+/* .pixelPanelTop {
   position: absolute;
   top: -50px;
   left: 0;
@@ -38,7 +38,7 @@
   max-height: 30vh;
   min-height: 25vh;
   z-index: -1;
-}
+} */
 
 .logo {
   min-width: 80px;
@@ -54,7 +54,7 @@
 
 /* ============================================== */
 
-.pixelPanelBot {
+/* .pixelPanelBot {
   position: absolute;
   bottom: -50px;
   left: 50%;
@@ -63,7 +63,7 @@
   max-height: 30vh;
   min-height: 25vh;
   z-index: -1;
-}
+} */
 
 /* .stringDecorBot {
   position: absolute;
@@ -99,7 +99,7 @@
 
 /* ============================================== */
 
-.pixelPanelLeft {
+/* .pixelPanelLeft {
   position: absolute;
   top: -50px;
   left: 0;
@@ -107,4 +107,4 @@
   max-height: 40vh;
   min-height: 25vh;
   z-index: 0;
-}
+} */

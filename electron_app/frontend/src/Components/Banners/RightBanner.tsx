@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-import pixelPanel from "/images/pixelPanel.png";
+//import pixelPanel from "/images/pixelPanel.png";
 import StringDecorBackup from "../../assets/stringDecorBackup.js";
 // import logo from "/images/Logo.png";
 
@@ -23,7 +23,7 @@ const RightBanner = () => {
         position: "absolute",
       }}
     >
-      <img src={pixelPanel} alt="pixel panel" className="pixelPanelLeft" />
+      {/*<img src={pixelPanel} alt="pixel panel" className="pixelPanelLeft" />*/}
       <StringDecorBackup className="stringDecorBackup" />
     </motion.div>
   );
