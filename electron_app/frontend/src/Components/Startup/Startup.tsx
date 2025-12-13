@@ -1,44 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Startup.css";
+import TopBanner from '../Banners/TopBanner';
+import BotBanner from '../Banners/BotBanner';
 import vid from '../../assets/rpi_arcade4.mp4';
 import demo from '../../assets/Marvel Super Heroes (Capcom 1995)  Attract Mode 60fps.mp4';
 import { useController } from "../ControllerContext";
-
-/*
-const gifs = [
-  '/images/EB1.gif',
-  '/images/EB2.gif',
-  // '../assets/EB3.gif',
-  // '../assets/EB4.gif',
-];
-*/
 
 const Startup = () => {
   const [showTitle, setShowTitle] = useState(false);
   const [inAttractMode, setInAttractMode] = useState(false);
   const navigate = useNavigate();
   const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  //const [randomGif, setRandomGif] = useState("");
   const { registerButtonHandler } = useController();
 
-  /*
-  useEffect(() => {
-    // Select a random GIF when the component mounts
-    const randomIndex = Math.floor(Math.random() * gifs.length);
-    setRandomGif(gifs[randomIndex]);
-  }, []);
-  */
-
-  const [videoPlayed, setVideoPlayed] = useState(() => { // Use sessionStorage to store state PER SESSION (changes on refresh)
-    return sessionStorage.getItem("videoPlayed") === "true"; // Defaults to false if not found
+  const [videoPlayed, setVideoPlayed] = useState(() => {
+    return sessionStorage.getItem("videoPlayed") === "true";
   });
 
-  useEffect(() => { // Save videoPlayed state to sessionStorage
+  useEffect(() => {
     sessionStorage.setItem("videoPlayed", videoPlayed.toString());
   }, [videoPlayed]);
 
-  // Clear any existing timer and start a new one
   const startInactivityTimer = () => {
     if (inactivityTimerRef.current) {
       clearTimeout(inactivityTimerRef.current);
@@ -46,10 +29,9 @@ const Startup = () => {
     inactivityTimerRef.current = setTimeout(() => {
       console.log("Entering attract mode");
       setInAttractMode(true);
-    }, 30000); // 30 seconds of inactivity triggers attract mode
+    }, 30000);
   };
 
-  // Reset inactivity timer and exit attract mode
   const resetInactivityTimer = () => {
     console.log("Resetting inactivity timer");
     if (inactivityTimerRef.current) {
@@ -59,12 +41,11 @@ const Startup = () => {
     setInAttractMode(false);
   };
 
-  // Initial intro video handler
   const handleVideoEnd = () => {
     console.log("Video ended, showing title screen");
     setShowTitle(true);
-    setVideoPlayed(true); // Mark video as played
-    startInactivityTimer(); // Start inactivity timer immediately after video ends
+    setVideoPlayed(true);
+    startInactivityTimer();
   };
 
   const handleClick = () => {
@@ -74,13 +55,12 @@ const Startup = () => {
     resetInactivityTimer();
   }
 
-  useEffect(() => { //register button inputs
+  useEffect(() => {
     console.log("X detected")
     registerButtonHandler("X", handleClick);
     registerButtonHandler("A", resetInactivityTimer);
     registerButtonHandler("B", resetInactivityTimer);
     registerButtonHandler("Y", resetInactivityTimer);
-    registerButtonHandler("A", resetInactivityTimer);
     registerButtonHandler("LB", resetInactivityTimer);
     registerButtonHandler("LT", resetInactivityTimer);
     registerButtonHandler("RB", resetInactivityTimer);
@@ -89,18 +69,17 @@ const Startup = () => {
     registerButtonHandler("Start", handleClick);
   }, [registerButtonHandler]);
 
-  // Track user interactions to reset the timer
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Enter" && !inAttractMode) { // Set up event listeners only after the title screen is shown
-        navigate("/emulators"); // Navigate to Emulator page
+      if (event.key === "Enter" && !inAttractMode) {
+        navigate("/emulators");
       }
       resetInactivityTimer();
     };
     window.addEventListener("keydown", handleKeyDown);
 
     if (showTitle) {
-      startInactivityTimer(); // Ensure the timer is running when title shows
+      startInactivityTimer();
     }
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
@@ -113,30 +92,28 @@ const Startup = () => {
 
   return (
     <div className="startup">
-      {!videoPlayed && !showTitle ? ( // Play the video first (only if first startup)
+      {!videoPlayed && !showTitle ? (
         console.log("vid", videoPlayed),
         <video autoPlay onEnded={handleVideoEnd}>
           <source src={vid} type="video/mp4" />
         </video>
       ) : inAttractMode ? (
         <div className="attractMode">
-          {/* Flashing Text */}
           <p className="push-start">Push Start Button</p>
           <video autoPlay loop>
             <source src={demo} type="video/mp4" />
           </video>
         </div>
-      ) : ( // If the intro already played, show title screen
+      ) : (
         <div className="titleScreen">
+          <TopBanner />
+          <BotBanner />
           <div className='backDrop'>
             <div className="horizon-glow"></div>
           </div>
-          {/* Title Section */}
           <div className="middle">
             <h1>rPi Arcade</h1>
             <p>An RCOS Project</p>
-
-            {/* Flashing Text */}
             <p className="push-start">Push Start Button</p>
           </div>
         </div>

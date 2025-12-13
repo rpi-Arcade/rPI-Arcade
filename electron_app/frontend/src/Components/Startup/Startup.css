@@ -1,3 +1,9 @@
+.startup {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
 .startup .middle {
   position: absolute;
   top: 40%;
@@ -9,13 +15,20 @@
   flex-direction: column;
   justify-content: flex-start;
   position: relative;
+  z-index: 10;
 }
+
 .startup .middle h1 {
   margin: 0;
   padding: 5px 0;
   scale: 1.5;
   text-transform: uppercase;
+  text-shadow: 
+    0 0 20px rgba(255, 51, 51, 0.8),
+    0 0 40px rgba(255, 51, 51, 0.6),
+    4px 4px 0 rgba(0, 0, 0, 0.8);
 }
+
 .startup .middle p {
   margin: 0;
   padding: 5px 0; 
@@ -30,6 +43,8 @@
   animation: flash 1s infinite;
   text-transform: uppercase;
   z-index: 10;
+  letter-spacing: 3px;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 @keyframes flash {
@@ -48,25 +63,26 @@
   display: flex;
   align-items: center;
   flex-direction: column;
+  height: 100vh;
 }
+
 .attractMode p {
   margin: 0;
   padding: 250px 0;
   scale: 1.5;
 }
 
-/*
-.startup {
-  display: flex;
-  justify-content: center;
-  align-items: center; 
+.attractMode video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
-*/
 
 .titleScreen {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .startup .title {
@@ -134,14 +150,13 @@
   content: '';
   position: absolute;
   bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 70%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
   transform-style: preserve-3d;
-  transform: rotateX(60deg);
+  transform: translateX(-50%) rotateX(60deg);
   transform-origin: bottom;
   z-index: 2;
-  
   background-image: 
     repeating-linear-gradient(
       0deg,
@@ -186,61 +201,4 @@
   filter: blur(20px);
   pointer-events: none;
   z-index: 3;
-}
-
-.startup .middle {
-  position: absolute;
-  top: 40%;
-  width: 100%;
-  text-align: center;
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: flex-start;
-  position: relative;
-}
-.startup .middle h1 {
-  margin: 0;
-  padding: 5px 0;
-  scale: 1.5;
-  text-transform: uppercase;
-}
-.startup .middle p {
-  margin: 0;
-  padding: 5px 0;
-  scale: 1.5;
-}
-
-.push-start {
-  font-size: 24px;
-  color: white;
-  top: 50%;
-  position: absolute;
-  animation: flash 1s infinite;
-  text-transform: uppercase;
-  z-index: 10;
-}
-
-@keyframes flash {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-.startup .text {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0 0 5px 0;
-}
-
-.attractMode {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-}
-.attractMode p {
-  margin: 0;
-  padding: 250px 0;
-  scale: 1.5;
 }
